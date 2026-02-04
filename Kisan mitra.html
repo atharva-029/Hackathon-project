@@ -1,0 +1,2868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kisan Mitra 🌾</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2E7D32;
+            --secondary: #4CAF50;
+            --accent: #FFD700;
+            --light: #E8F5E9;
+            --dark: #1B5E20;
+            --text: #333;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .slogan {
+            font-size: 14px;
+            font-style: italic;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .language-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Button Styles */
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary);
+            color: white;
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 60px 5%;
+            margin: 30px 5%;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--dark);
+            position: relative;
+            z-index: 2;
+        }
+
+        .section h2::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: var(--accent);
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+
+        /* Intro Section */
+        #intro {
+            background: linear-gradient(rgba(46, 125, 50, 0.8), rgba(27, 94, 32, 0.9)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            color: white;
+            text-align: center;
+            padding: 150px 5% 100px;
+            margin-top: 80px;
+        }
+
+        #intro h2 {
+            color: white;
+            font-size: 3rem;
+        }
+
+        #intro h2::after {
+            background: var(--accent);
+        }
+
+        #intro p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        /* Features Section */
+        #features {
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('https://images.unsplash.com/photo-1586773860418-d37222d8fce3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            display: none;
+        }
+
+        .feature-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-btn {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .feature-btn:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            border-color: var(--secondary);
+        }
+
+        .feature-btn i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .feature-btn h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        /* Weather Section */
+        #weather {
+            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            position: relative;
+        }
+
+        .weather-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .weather-input {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .weather-input select {
+            width: 100%;
+            padding: 15px;
+            border-radius: 50px;
+            border: 2px solid var(--secondary);
+            margin-bottom: 15px;
+            font-size: 1rem;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .weather-result {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: var(--dark);
+        }
+
+        .weather-chart {
+            flex: 2;
+            min-width: 300px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .weather-graphics {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* 3D Weather Graph */
+        #weather3d {
+            width: 100%;
+            height: 400px;
+            margin-top: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Humidity and Temperature Display */
+        .weather-details {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            gap: 20px;
+        }
+
+        .weather-detail-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            min-width: 150px;
+            flex: 1;
+        }
+
+        .weather-detail-card i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .weather-detail-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .weather-detail-card p {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        /* Mandi & Crops Sections */
+        #mandi {
+            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('https://images.unsplash.com/photo-1560493676-04071c5f467b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        }
+
+        #crops {
+            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('https://images.unsplash.com/photo-1625246335526-041bfdbfeec9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        table th, table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        table th {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .crop-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        /* Schemes Section */
+        #schemes {
+            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .card p {
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        /* Crop cards with icons */
+        .crop-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .crop-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .crop-icon-large {
+            width: 100%;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light);
+            overflow: hidden;
+        }
+
+        .crop-icon-large i {
+            font-size: 5rem;
+            color: var(--primary);
+        }
+
+        /* Crop Detail Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: modalFade 0.3s;
+        }
+
+        @keyframes modalFade {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .modal-header {
+            padding: 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            color: white;
+            margin: 0;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .crop-detail-icon {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .crop-detail-icon i {
+            font-size: 8rem;
+            color: var(--primary);
+        }
+
+        .crop-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-card {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid var(--secondary);
+        }
+
+        .info-card h3 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* AI Assistant */
+        #aiChat {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #aiChatHeader {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #aiMessages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f9f9f9;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+
+        .user-message {
+            background: var(--secondary);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message {
+            background: white;
+            border: 1px solid #eee;
+            border-bottom-left-radius: 5px;
+        }
+
+        #aiInputContainer {
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        #aiInput {
+            flex: 1;
+            padding: 12px;
+            border-radius: 50px;
+            border: 1px solid #ddd;
+        }
+
+        /* Voice Assistant Button */
+        .voice-btn {
+            background: var(--accent);
+            color: var(--dark);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .voice-btn:hover {
+            background: #ffed4e;
+            transform: scale(1.1);
+        }
+
+        .voice-btn.listening {
+            animation: pulse 1.5s infinite;
+            background: #ff5252;
+            color: white;
+        }
+
+        .voice-btn.speaking {
+            background: #4CAF50;
+            color: white;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 82, 82, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 82, 82, 0); }
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 30px 5%;
+            margin-top: 50px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .section {
+                margin: 20px 3%;
+                padding: 40px 3%;
+            }
+            
+            .feature-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            #aiChat {
+                width: 300px;
+                height: 400px;
+                right: 10px;
+                bottom: 10px;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .header-left {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+
+            #weather3d {
+                height: 300px;
+            }
+        }
+
+        /* Weather Graphics */
+        .weather-graphics .sun {
+            position: absolute;
+            top: 20%;
+            right: 10%;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #FFD700, #FFA500);
+            border-radius: 50%;
+            box-shadow: 0 0 40px #FFD700;
+            animation: pulse 3s infinite alternate;
+        }
+
+        .weather-graphics .cloud {
+            position: absolute;
+            width: 120px;
+            height: 60px;
+            background: #f0f0f0;
+            border-radius: 50px;
+            top: 30%;
+            left: 15%;
+            box-shadow: 
+                30px 10px 0 10px #f0f0f0,
+                -30px 10px 0 10px #f0f0f0;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        .weather-graphics .rain {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: #87CEEB;
+            top: 90px;
+            left: 50%;
+            animation: rain 1s infinite linear;
+            opacity: 0;
+        }
+
+        .weather-graphics .rain:nth-child(1) { left: 20%; animation-delay: 0s; }
+        .weather-graphics .rain:nth-child(2) { left: 30%; animation-delay: 0.2s; }
+        .weather-graphics .rain:nth-child(3) { left: 40%; animation-delay: 0.4s; }
+        .weather-graphics .rain:nth-child(4) { left: 50%; animation-delay: 0.6s; }
+        .weather-graphics .rain:nth-child(5) { left: 60%; animation-delay: 0.8s; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes rain {
+            0% { transform: translateY(-100px); opacity: 1; }
+            100% { transform: translateY(200px); opacity: 0; }
+        }
+
+        /* AI Assistant Close Button */
+        .ai-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <header id="mainHeader">
+        <div class="header-left">
+            <div class="logo-container">
+                <div class="logo">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div>
+                    <h1>Kisan Mitra</h1>
+                    <div class="slogan">किसानों की समस्याएं, हमारे समाधान</div>
+                </div>
+            </div>
+        </div>
+        <div class="language-buttons">
+            <button class="btn-secondary" onclick="setLanguage('en')">
+                <i class="fas fa-globe"></i> English
+            </button>
+            <button class="btn-secondary" onclick="setLanguage('hi')">
+                <i class="fas fa-globe"></i> हिन्दी
+            </button>
+        </div>
+    </header>
+
+    <section class="section" id="intro">
+        <h2 id="introTitle">Kisan Mitra में आपका स्वागत है</h2>
+        <p id="introText">कृषि सफलता के लिए आपका डिजिटल साथी। मौसम अपडेट, बाजार मूल्य, सरकारी योजनाएं और फसल की जानकारी एक ही स्थान पर प्राप्त करें।</p>
+        <button class="btn-primary" id="exploreFeaturesBtn" onclick="showFeatures()">
+            <i class="fas fa-compass"></i> <span id="exploreFeaturesText">विशेषताएँ देखें</span>
+        </button>
+    </section>
+
+    <section class="section" id="features" style="display:none;">
+        <h2 id="featuresTitle">विशेषताएँ</h2>
+        <div class="feature-buttons">
+            <div class="feature-btn" onclick="scrollToSection('weather')">
+                <i class="fas fa-cloud-sun"></i>
+                <h3 id="weatherFeature">मौसम</h3>
+                <p id="weatherDesc">अपने खेत के लिए सटीक मौसम पूर्वानुमान प्राप्त करें</p>
+            </div>
+            <div class="feature-btn" onclick="scrollToSection('mandi')">
+                <i class="fas fa-rupee-sign"></i>
+                <h3 id="mandiFeature">मंडी मूल्य</h3>
+                <p id="mandiDesc">अपनी फसलों के लिए नवीनतम बाजार मूल्य जांचें</p>
+            </div>
+            <div class="feature-btn" onclick="scrollToSection('schemes')">
+                <i class="fas fa-file-contract"></i>
+                <h3 id="schemesFeature">सरकारी योजनाएं</h3>
+                <p id="schemesDesc">किसानों के लिए सरकारी योजनाओं का पता लगाएं</p>
+            </div>
+            <div class="feature-btn" onclick="scrollToSection('crops')">
+                <i class="fas fa-leaf"></i>
+                <h3 id="cropsFeature">फसल जानकारी</h3>
+                <p id="cropsDesc">विभिन्न फसलों के बारे में विस्तृत जानकारी प्राप्त करें</p>
+            </div>
+            <div class="feature-btn" onclick="openAssistant()">
+                <i class="fas fa-robot"></i>
+                <h3 id="aiFeature">AI सहायक</h3>
+                <p id="aiDesc">अपने कृषि प्रश्नों के उत्तर प्राप्त करें</p>
+            </div>
+             <div class="feature-btn" onclick="scrollToSection('Crop Fertilizer and Pesticide Guide ')">
+                <i class="fas fa-robot"></i>
+                <h3 id="Crop Fertilizer and Pesticide Guide feature">फसल उर्वरक और कीटनाशक सुविधाएँ</h3>
+                <p id="fertilizerDesc">अपनी फसलों के बारे में उर्वरक एवं कीटनाशकों   और उर्वरक की जानकारी प्राप्त करें</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="weather">
+        <h2 id="weatherTitle">मौसम</h2>
+        <div class="weather-container">
+            <div class="weather-input">
+                <select id="stateSelect" onchange="updateDistricts()">
+                    <option value="">राज्य चुनें</option>
+                </select>
+                <select id="districtSelect" onchange="updateCities()">
+                    <option value="">जिला चुनें</option>
+                </select>
+                <select id="citySelect">
+                    <option value="">शहर चुनें</option>
+                </select>
+                <button class="btn-primary" onclick="getWeather()">
+                    <i class="fas fa-search"></i> <span id="checkWeatherText">मौसम जांचें</span>
+                </button>
+                <div id="weatherResult" class="weather-result"></div>
+                
+                <!-- Humidity and Temperature Display -->
+                <div class="weather-details">
+                    <div class="weather-detail-card">
+                        <i class="fas fa-thermometer-half"></i>
+                        <h3 id="temperatureLabel">तापमान</h3>
+                        <p id="temperature">--°C</p>
+                    </div>
+                    <div class="weather-detail-card">
+                        <i class="fas fa-tint"></i>
+                        <h3 id="humidityLabel">आर्द्रता</h3>
+                        <p id="humidity">--%</p>
+                    </div>
+                    <div class="weather-detail-card">
+                        <i class="fas fa-wind"></i>
+                        <h3 id="windSpeedLabel">हवा की गति</h3>
+                        <p id="windSpeed">-- किमी/घंटा</p>
+                    </div>
+                </div>
+            </div>
+            <div class="weather-chart">
+                <canvas id="weatherChart" width="800" height="400"></canvas>
+                <div class="weather-graphics" id="weatherGraphics">
+                    <!-- Weather graphics will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3D Weather Graph -->
+        <div id="weather3d"></div>
+    </section>
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Guide Section</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .crop-guide-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #4caf50;
+        }
+        
+        .section-title {
+            font-size: 2.2rem;
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+              
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+        }
+        
+        .language-toggle {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .lang-btn {
+            background: #fff;
+            border: 2px solid #4caf50;
+            color: #4caf50;
+            padding: 8px 20px;
+            margin: 0 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .lang-btn.active {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .lang-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .crop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .crop-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .crop-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .crop-header {
+            padding: 15px;
+            background: #4caf50;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        
+        .crop-icon {
+            font-size: 1.8rem;
+            margin-right: 10px;
+        }
+        
+        .crop-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .crop-content {
+            padding: 15px;
+        }
+        
+        .crop-details {
+            display: none;
+            padding: 15px;
+            background: #f1f8e9;
+            border-top: 1px solid #c8e6c9;
+        }
+        
+        .crop-details.active {
+            display: block;
+        }
+        
+        .detail-section {
+            margin-bottom: 15px;
+        }
+        
+        .detail-title {
+            font-size: 1.1rem;
+            color: #2e7d32;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #a5d6a7;
+        }
+        
+        .detail-content ul {
+            list-style-type: none;
+            padding-left: 5px;
+        }
+        
+        .detail-content li {
+            margin-bottom: 6px;
+            padding-left: 15px;
+            position: relative;
+        }
+        
+        .detail-content li:before {
+            content: "•";
+            color: #4caf50;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .crop-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .crop-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .lang-btn {
+                padding: 6px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="crop-guide-section">
+        <div class="section-header">
+            <h2 class="section-title">फसल उर्वरक और कीटनाशक गाइड</h2>
+            <p class="section-subtitle">Crop Fertilizer & Pesticide Guide</p>
+        </div>
+        
+        <div class="language-toggle">
+            <button class="lang-btn active" data-lang="hi">हिन्दी</button>
+            <button class="lang-btn" data-lang="en">English</button>
+        </div>
+        
+        <div class="crop-grid">
+            <!-- Wheat -->
+            <div class="crop-card">
+                <div class="crop-header">
+                    <span class="crop-icon">🌾</span>
+                    <h3 class="crop-name"><span class="lang-hi">गेहूं</span><span class="lang-en">Wheat</span></h3>
+                </div>
+                <div class="crop-content">
+                    <p class="lang-hi">उर्वरक और कीटनाशक जानकारी के लिए क्लिक करें</p>
+                    <p class="lang-en">Click for fertilizer and pesticide information</p>
+                </div>
+                <div class="crop-details">
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">उर्वरक</h4>
+                        <h4 class="detail-title lang-en">Fertilizers</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">बेसल उर्वरक: 60-80 किग्रा नाइट्रोजन, 40-60 किग्रा फॉस्फोरस, 40 किग्रा पोटाश प्रति हेक्टेयर</li>
+                                <li class="lang-en">Basal Fertilizer: 60-80 kg Nitrogen, 40-60 kg Phosphorus, 40 kg Potash per hectare</li>
+                                <li class="lang-hi">टॉप ड्रेसिंग: यूरिया की पहली खुराक बुवाई के 21-25 दिन बाद</li>
+                                <li class="lang-en">Top Dressing: First dose of urea 21-25 days after sowing</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">कीटनाशक</h4>
+                        <h4 class="detail-title lang-en">Pesticides</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">एफिड्स के लिए: इमिडाक्लोप्रिड 17.8% एसएल @ 50-60 मिली/हेक्टेयर</li>
+                                <li class="lang-en">For Aphids: Imidacloprid 17.8% SL @ 50-60 ml/hectare</li>
+                                <li class="lang-hi">रस्ट के लिए: प्रोपिकोनाजोल 25% ईसी @ 500 मिली/हेक्टेयर</li>
+                                <li class="lang-en">For Rust: Propiconazole 25% EC @ 500 ml/hectare</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rice -->
+            <div class="crop-card">
+                <div class="crop-header">
+                    <span class="crop-icon">🍚</span>
+                    <h3 class="crop-name"><span class="lang-hi">धान</span><span class="lang-en">Rice</span></h3>
+                </div>
+                <div class="crop-content">
+                    <p class="lang-hi">उर्वरक और कीटनाशक जानकारी के लिए क्लिक करें</p>
+                    <p class="lang-en">Click for fertilizer and pesticide information</p>
+                </div>
+                <div class="crop-details">
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">उर्वरक</h4>
+                        <h4 class="detail-title lang-en">Fertilizers</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">बेसल उर्वरक: 80-120 किग्रा नाइट्रोजन, 40-60 किग्रा फॉस्फोरस, 40 किग्रा पोटाश प्रति हेक्टेयर</li>
+                                <li class="lang-en">Basal Fertilizer: 80-120 kg Nitrogen, 40-60 kg Phosphorus, 40 kg Potash per hectare</li>
+                                <li class="lang-hi">टॉप ड्रेसिंग: यूरिया की दो खुराक - टिलरिंग और पैनिकल इनिशिएशन स्टेज पर</li>
+                                <li class="lang-en">Top Dressing: Two doses of urea - at tillering and panicle initiation stage</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">कीटनाशक</h4>
+                        <h4 class="detail-title lang-en">Pesticides</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">स्टेम बोरर के लिए: कार्टाप हाइड्रोक्लोराइड 4% जी @ 25 किग्रा/हेक्टेयर</li>
+                                <li class="lang-en">For Stem Borer: Cartap Hydrochloride 4% G @ 25 kg/hectare</li>
+                                <li class="lang-hi">ब्लास्ट के लिए: ट्राइसाइक्लाजोल 75% WP @ 500-600 ग्राम/हेक्टेयर</li>
+                                <li class="lang-en">For Blast: Tricyclazole 75% WP @ 500-600 grams/hectare</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sugarcane -->
+            <div class="crop-card">
+                <div class="crop-header">
+                    <span class="crop-icon">🎋</span>
+                    <h3 class="crop-name"><span class="lang-hi">गन्ना</span><span class="lang-en">Sugarcane</span></h3>
+                </div>
+                <div class="crop-content">
+                    <p class="lang-hi">उर्वरक और कीटनाशक जानकारी के लिए क्लिक करें</p>
+                    <p class="lang-en">Click for fertilizer and pesticide information</p>
+                </div>
+                <div class="crop-details">
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">उर्वरक</h4>
+                        <h4 class="detail-title lang-en">Fertilizers</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">बेसल उर्वरक: 150-200 किग्रा नाइट्रोजन, 60-80 किग्रा फॉस्फोरस, 40-60 किग्रा पोटाश प्रति हेक्टेयर</li>
+                                <li class="lang-en">Basal Fertilizer: 150-200 kg Nitrogen, 60-80 kg Phosphorus, 40-60 kg Potash per hectare</li>
+                                <li class="lang-hi">टॉप ड्रेसिंग: यूरिया की तीन खुराक - 30, 60 और 90 दिन बाद</li>
+                                <li class="lang-en">Top Dressing: Three doses of urea - at 30, 60 and 90 days</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">कीटनाशक</h4>
+                        <h4 class="detail-title lang-en">Pesticides</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">अगेती शूट बोरर के लिए: कार्बोफ्यूरान 3% जी @ 33 किग्रा/हेक्टेयर</li>
+                                <li class="lang-en">For Early Shoot Borer: Carbofuran 3% G @ 33 kg/hectare</li>
+                                <li class="lang-hi">रेड रॉट के लिए: कार्बेन्डाजिम 50% WP @ 500 ग्राम/हेक्टेयर</li>
+                                <li class="lang-en">For Red Rot: Carbendazim 50% WP @ 500 grams/hectare</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Til (Sesame) -->
+            <div class="crop-card">
+                <div class="crop-header">
+                    <span class="crop-icon">🌱</span>
+                    <h3 class="crop-name"><span class="lang-hi">तिल</span><span class="lang-en">Sesame (Til)</span></h3>
+                </div>
+                <div class="crop-content">
+                    <p class="lang-hi">उर्वरक और कीटनाशक जानकारी के लिए क्लिक करें</p>
+                    <p class="lang-en">Click for fertilizer and pesticide information</p>
+                </div>
+                <div class="crop-details">
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">उर्वरक</h4>
+                        <h4 class="detail-title lang-en">Fertilizers</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">बेसल उर्वरक: 40-60 किग्रा नाइट्रोजन, 30-40 किग्रा फॉस्फोरस, 20-30 किग्रा पोटाश प्रति हेक्टेयर</li>
+                                <li class="lang-en">Basal Fertilizer: 40-60 kg Nitrogen, 30-40 kg Phosphorus, 20-30 kg Potash per hectare</li>
+                                <li class="lang-hi">टॉप ड्रेसिंग: यूरिया की एक खुराक बुवाई के 30 दिन बाद</li>
+                                <li class="lang-en">Top Dressing: One dose of urea 30 days after sowing</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">कीटनाशक</h4>
+                        <h4 class="detail-title lang-en">Pesticides</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">फली छेदक के लिए: क्विनलफॉस 25% ईसी @ 750 मिली/हेक्टेयर</li>
+                                <li class="lang-en">For Pod Borer: Quinalphos 25% EC @ 750 ml/hectare</li>
+                                <li class="lang-hi">फफूंदी के लिए: मैनकोजेब 75% WP @ 2 किग्रा/हेक्टेयर</li>
+                                <li class="lang-en">For Fungal Diseases: Mancozeb 75% WP @ 2 kg/hectare</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mustard -->
+            <div class="crop-card">
+                <div class="crop-header">
+                    <span class="crop-icon">🟡</span>
+                    <h3 class="crop-name"><span class="lang-hi">सरसों</span><span class="lang-en">Mustard</span></h3>
+                </div>
+                <div class="crop-content">
+                    <p class="lang-hi">उर्वरक और कीटनाशक जानकारी के लिए क्लिक करें</p>
+                    <p class="lang-en">Click for fertilizer and pesticide information</p>
+                </div>
+                <div class="crop-details">
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">उर्वरक</h4>
+                        <h4 class="detail-title lang-en">Fertilizers</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">बेसल उर्वरक: 60-80 किग्रा नाइट्रोजन, 30-40 किग्रा फॉस्फोरस, 20-30 किग्रा पोटाश प्रति हेक्टेयर</li>
+                                <li class="lang-en">Basal Fertilizer: 60-80 kg Nitrogen, 30-40 kg Phosphorus, 20-30 kg Potash per hectare</li>
+                                <li class="lang-hi">टॉप ड्रेसिंग: यूरिया की दो खुराक - 30 और 60 दिन बाद</li>
+                                <li class="lang-en">Top Dressing: Two doses of urea - at 30 and 60 days</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">कीटनाशक</h4>
+                        <h4 class="detail-title lang-en">Pesticides</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">एफिड्स के लिए: डाइमेथोएट 30% ईसी @ 500 मिली/हेक्टेयर</li>
+                                <li class="lang-en">For Aphids: Dimethoate 30% EC @ 500 ml/hectare</li>
+                                <li class="lang-hi">सफेद रस्ट के लिए: मेटालैक्सिल 8% + मैनकोजेब 64% WP @ 2 किग्रा/हेक्टेयर</li>
+                                <li class="lang-en">For White Rust: Metalaxyl 8% + Mancozeb 64% WP @ 2 kg/hectare</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Potato -->
+            <div class="crop-card">
+                <div class="crop-header">
+                    <span class="crop-icon">🥔</span>
+                    <h3 class="crop-name"><span class="lang-hi">आलू</span><span class="lang-en">Potato</span></h3>
+                </div>
+                <div class="crop-content">
+                    <p class="lang-hi">उर्वरक और कीटनाशक जानकारी के लिए क्लिक करें</p>
+                    <p class="lang-en">Click for fertilizer and pesticide information</p>
+                </div>
+                <div class="crop-details">
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">उर्वरक</h4>
+                        <h4 class="detail-title lang-en">Fertilizers</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">बेसल उर्वरक: 120-150 किग्रा नाइट्रोजन, 60-80 किग्रा फॉस्फोरस, 80-100 किग्रा पोटाश प्रति हेक्टेयर</li>
+                                <li class="lang-en">Basal Fertilizer: 120-150 kg Nitrogen, 60-80 kg Phosphorus, 80-100 kg Potash per hectare</li>
+                                <li class="lang-hi">टॉप ड्रेसिंग: यूरिया की दो खुराक - 30 और 45 दिन बाद</li>
+                                <li class="lang-en">Top Dressing: Two doses of urea - at 30 and 45 days</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">कीटनाशक</h4>
+                        <h4 class="detail-title lang-en">Pesticides</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">लेट ब्लाइट के लिए: मेटालैक्सिल 8% + मैनकोजेब 64% WP @ 2-2.5 किग्रा/हेक्टेयर</li>
+                                <li class="lang-en">For Late Blight: Metalaxyl 8% + Mancozeb 64% WP @ 2-2.5 kg/hectare</li>
+                                <li class="lang-hi">एफिड्स के लिए: डाइमेथोएट 30% ईसी @ 500 मिली/हेक्टेयर</li>
+                                <li class="lang-en">For Aphids: Dimethoate 30% EC @ 500 ml/hectare</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tomato -->
+            <div class="crop-card">
+                <div class="crop-header">
+                    <span class="crop-icon">🍅</span>
+                    <h3 class="crop-name"><span class="lang-hi">टमाटर</span><span class="lang-en">Tomato</span></h3>
+                </div>
+                <div class="crop-content">
+                    <p class="lang-hi">उर्वरक और कीटनाशक जानकारी के लिए क्लिक करें</p>
+                    <p class="lang-en">Click for fertilizer and pesticide information</p>
+                </div>
+                <div class="crop-details">
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">उर्वरक</h4>
+                        <h4 class="detail-title lang-en">Fertilizers</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">बेसल उर्वरक: 100-120 किग्रा नाइट्रोजन, 60-80 किग्रा फॉस्फोरस, 60-80 किग्रा पोटाश प्रति हेक्टेयर</li>
+                                <li class="lang-en">Basal Fertilizer: 100-120 kg Nitrogen, 60-80 kg Phosphorus, 60-80 kg Potash per hectare</li>
+                                <li class="lang-hi">टॉप ड्रेसिंग: यूरिया की तीन खुराक - 30, 45 और 60 दिन बाद</li>
+                                <li class="lang-en">Top Dressing: Three doses of urea - at 30, 45 and 60 days</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">कीटनाशक</h4>
+                        <h4 class="detail-title lang-en">Pesticides</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">फल छेदक के लिए: इन्डोक्साकार्ब 14.5% एससी @ 200 मिली/हेक्टेयर</li>
+                                <li class="lang-en">For Fruit Borer: Indoxacarb 14.5% SC @ 200 ml/hectare</li>
+                                <li class="lang-hi">लेट ब्लाइट के लिए: क्लोरोथालोनिल 75% WP @ 2 किग्रा/हेक्टेयर</li>
+                                <li class="lang-en">For Late Blight: Chlorothalonil 75% WP @ 2 kg/hectare</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bajra -->
+            <div class="crop-card">
+                <div class="crop-header">
+                    <span class="crop-icon">🌾</span>
+                    <h3 class="crop-name"><span class="lang-hi">बाजरा</span><span class="lang-en">Pearl Millet (Bajra)</span></h3>
+                </div>
+                <div class="crop-content">
+                    <p class="lang-hi">उर्वरक और कीटनाशक जानकारी के लिए क्लिक करें</p>
+                    <p class="lang-en">Click for fertilizer and pesticide information</p>
+                </div>
+                <div class="crop-details">
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">उर्वरक</h4>
+                        <h4 class="detail-title lang-en">Fertilizers</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">बेसल उर्वरक: 60-80 किग्रा नाइट्रोजन, 30-40 किग्रा फॉस्फोरस, 20-30 किग्रा पोटाश प्रति हेक्टेयर</li>
+                                <li class="lang-en">Basal Fertilizer: 60-80 kg Nitrogen, 30-40 kg Phosphorus, 20-30 kg Potash per hectare</li>
+                                <li class="lang-hi">टॉप ड्रेसिंग: यूरिया की एक खुराक बुवाई के 30 दिन बाद</li>
+                                <li class="lang-en">Top Dressing: One dose of urea 30 days after sowing</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">कीटनाशक</h4>
+                        <h4 class="detail-title lang-en">Pesticides</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">ब्लास्ट के लिए: एडिफेनफोस 50% ईसी @ 500 मिली/हेक्टेयर</li>
+                                <li class="lang-en">For Blast: Edifenphos 50% EC @ 500 ml/hectare</li>
+                                <li class="lang-hi">स्टेम बोरर के लिए: कार्बारिल 50% WP @ 1 किग्रा/हेक्टेयर</li>
+                                <li class="lang-en">For Stem Borer: Carbaryl 50% WP @ 1 kg/hectare</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Corn -->
+            <div class="crop-card">
+                <div class="crop-header">
+                    <span class="crop-icon">🌽</span>
+                    <h3 class="crop-name"><span class="lang-hi">मक्का</span><span class="lang-en">Corn</span></h3>
+                </div>
+                <div class="crop-content">
+                    <p class="lang-hi">उर्वरक और कीटनाशक जानकारी के लिए क्लिक करें</p>
+                    <p class="lang-en">Click for fertilizer and pesticide information</p>
+                </div>
+                <div class="crop-details">
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">उर्वरक</h4>
+                        <h4 class="detail-title lang-en">Fertilizers</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">बेसल उर्वरक: 100-120 किग्रा नाइट्रोजन, 60-80 किग्रा फॉस्फोरस, 40-60 किग्रा पोटाश प्रति हेक्टेयर</li>
+                                <li class="lang-en">Basal Fertilizer: 100-120 kg Nitrogen, 60-80 kg Phosphorus, 40-60 kg Potash per hectare</li>
+                                <li class="lang-hi">टॉप ड्रेसिंग: यूरिया की दो खुराक - 30 और 50 दिन बाद</li>
+                                <li class="lang-en">Top Dressing: Two doses of urea - at 30 and 50 days</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">कीटनाशक</h4>
+                        <h4 class="detail-title lang-en">Pesticides</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">स्टेम बोरर के लिए: कार्बोफ्यूरान 3% जी @ 25 किग्रा/हेक्टेयर</li>
+                                <li class="lang-en">For Stem Borer: Carbofuran 3% G @ 25 kg/hectare</li>
+                                <li class="lang-hi">लीफ ब्लाइट के लिए: मैनकोजेब 75% WP @ 2 किग्रा/हेक्टेयर</li>
+                                <li class="lang-en">For Leaf Blight: Mancozeb 75% WP @ 2 kg/hectare</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Peanuts -->
+            <div class="crop-card">
+                <div class="crop-header">
+                    <span class="crop-icon">🥜</span>
+                    <h3 class="crop-name"><span class="lang-hi">मूंगफली</span><span class="lang-en">Peanuts</span></h3>
+                </div>
+                <div class="crop-content">
+                    <p class="lang-hi">उर्वरक और कीटनाशक जानकारी के लिए क्लिक करें</p>
+                    <p class="lang-en">Click for fertilizer and pesticide information</p>
+                </div>
+                <div class="crop-details">
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">उर्वरक</h4>
+                        <h4 class="detail-title lang-en">Fertilizers</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">बेसल उर्वरक: 20-25 किग्रा नाइट्रोजन, 40-60 किग्रा फॉस्फोरस, 20-30 किग्रा पोटाश प्रति हेक्टेयर</li>
+                                <li class="lang-en">Basal Fertilizer: 20-25 kg Nitrogen, 40-60 kg Phosphorus, 20-30 kg Potash per hectare</li>
+                                <li class="lang-hi">जिप्सम: बुवाई के समय 200-250 किग्रा/हेक्टेयर</li>
+                                <li class="lang-en">Gypsum: 200-250 kg/hectare at sowing time</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">कीटनाशक</h4>
+                        <h4 class="detail-title lang-en">Pesticides</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">लीफ स्पॉट के लिए: कार्बेन्डाजिम 50% WP @ 500 ग्राम/हेक्टेयर</li>
+                                <li class="lang-en">For Leaf Spot: Carbendazim 50% WP @ 500 grams/hectare</li>
+                                <li class="lang-hi">थ्रिप्स के लिए: इमिडाक्लोप्रिड 17.8% एसएल @ 50 मिली/हेक्टेयर</li>
+                                <li class="lang-en">For Thrips: Imidacloprid 17.8% SL @ 50 ml/hectare</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cotton -->
+            <div class="crop-card">
+                <div class="crop-header">
+                    <span class="crop-icon">🧵</span>
+                    <h3 class="crop-name"><span class="lang-hi">कपास</span><span class="lang-en">Cotton</span></h3>
+                </div>
+                <div class="crop-content">
+                    <p class="lang-hi">उर्वरक और कीटनाशक जानकारी के लिए क्लिक करें</p>
+                    <p class="lang-en">Click for fertilizer and pesticide information</p>
+                </div>
+                <div class="crop-details">
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">उर्वरक</h4>
+                        <h4 class="detail-title lang-en">Fertilizers</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">बेसल उर्वरक: 80-100 किग्रा नाइट्रोजन, 40-60 किग्रा फॉस्फोरस, 40-60 किग्रा पोटाश प्रति हेक्टेयर</li>
+                                <li class="lang-en">Basal Fertilizer: 80-100 kg Nitrogen, 40-60 kg Phosphorus, 40-60 kg Potash per hectare</li>
+                                <li class="lang-hi">टॉप ड्रेसिंग: यूरिया की दो खुराक - 45 और 75 दिन बाद</li>
+                                <li class="lang-en">Top Dressing: Two doses of urea - at 45 and 75 days</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">कीटनाशक</h4>
+                        <h4 class="detail-title lang-en">Pesticides</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">बॉलवर्म के लिए: स्पिनोसैड 45% एससी @ 75 मिली/हेक्टेयर</li>
+                                <li class="lang-en">For Bollworm: Spinosad 45% SC @ 75 ml/hectare</li>
+                                <li class="lang-hi">सफेद मक्खी के लिए: एसिटामिप्रिड 20% एसपी @ 50 ग्राम/हेक्टेयर</li>
+                                <li class="lang-en">For Whitefly: Acetamiprid 20% SP @ 50 grams/hectare</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Soybean -->
+            <div class="crop-card">
+                <div class="crop-header">
+                    <span class="crop-icon">🟤</span>
+                    <h3 class="crop-name"><span class="lang-hi">सोयाबीन</span><span class="lang-en">Soybean</span></h3>
+                </div>
+                <div class="crop-content">
+                    <p class="lang-hi">उर्वरक और कीटनाशक जानकारी के लिए क्लिक करें</p>
+                    <p class="lang-en">Click for fertilizer and pesticide information</p>
+                </div>
+                <div class="crop-details">
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">उर्वरक</h4>
+                        <h4 class="detail-title lang-en">Fertilizers</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">बेसल उर्वरक: 20-25 किग्रा नाइट्रोजन, 60-80 किग्रा फॉस्फोरस, 40-60 किग्रा पोटाश प्रति हेक्टेयर</li>
+                                <li class="lang-en">Basal Fertilizer: 20-25 kg Nitrogen, 60-80 kg Phosphorus, 40-60 kg Potash per hectare</li>
+                                <li class="lang-hi">राइजोबियम कल्चर: बीज उपचार के लिए</li>
+                                <li class="lang-en">Rhizobium Culture: For seed treatment</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="detail-title lang-hi">कीटनाशक</h4>
+                        <h4 class="detail-title lang-en">Pesticides</h4>
+                        <div class="detail-content">
+                            <ul>
+                                <li class="lang-hi">गर्डल बीटल के लिए: क्लोरपाइरीफॉस 20% ईसी @ 1.25 लीटर/हेक्टेयर</li>
+                                <li class="lang-en">For Girdle Beetle: Chlorpyrifos 20% EC @ 1.25 liters/hectare</li>
+                                <li class="lang-hi">येलो मोज़ेक वायरस के लिए: इमिडाक्लोप्रिड 17.8% एसएल @ 50 मिली/हेक्टेयर</li>
+                                <li class="lang-en">For Yellow Mosaic Virus: Imidacloprid 17.8% SL @ 50 ml/hectare</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Language toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const hiElements = document.querySelectorAll('.lang-hi');
+            const enElements = document.querySelectorAll('.lang-en');
+            
+            // Set initial language to Hindi
+            setLanguage('hi');
+            
+            // Add click event listeners to language buttons
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    
+                    // Update active button
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Set language
+                    setLanguage(lang);
+                });
+            });
+            
+            // Function to set language
+            function setLanguage(lang) {
+                if (lang === 'hi') {
+                    hiElements.forEach(el => el.style.display = 'block');
+                    enElements.forEach(el => el.style.display = 'none');
+                    document.documentElement.lang = 'hi';
+                } else {
+                    hiElements.forEach(el => el.style.display = 'none');
+                    enElements.forEach(el => el.style.display = 'block');
+                    document.documentElement.lang = 'en';
+                }
+            }
+            
+            // Toggle crop details on card click
+            const cropCards = document.querySelectorAll('.crop-card');
+            cropCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const details = this.querySelector('.crop-details');
+                    details.classList.toggle('active');
+                    
+                    // Close other open details
+                    cropCards.forEach(otherCard => {
+                        if (otherCard !== this) {
+                            otherCard.querySelector('.crop-details').classList.remove('active');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+    <section class="section" id="mandi" style="background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('https://images.unsplash.com/photo-1560493676-04071c5f467b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+        <h2 id="mandiTitle">मंडी कीमतें</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th id="cropHeader">फसल</th>
+                        <th id="marketPriceHeader">बाजार मूल्य (₹/क्विंटल)</th>
+                        <th id="wholesalerPriceHeader">थोक व्यापारी मूल्य (₹/क्विंटल)</th>
+                        <th id="profitHeader">लाभ (₹/क्विंटल)</th>
+                    </tr>
+                </thead>
+                <tbody id="mandi-table-body"></tbody>
+            </table>
+        </div>
+        <canvas id="mandiChart" width="400" height="200"></canvas>
+    </section>
+
+    <section class="section" id="schemes" style="background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+        <h2 id="schemesTitle">सरकारी योजनाएँ</h2>
+        <div id="gov-schemes-grid" class="grid"></div>
+    </section>
+
+    <section class="section" id="crops" style="background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('https://images.unsplash.com/photo-1625246335526-041bfdbfeec9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+        <h2 id="cropsTitle">फसलें जानकारी</h2>
+        <div id="crops-grid" class="grid"></div>
+    </section>
+
+    <!-- Crop Detail Modal -->
+    <div id="cropModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalCropName">Crop Name</h2>
+                <button class="close-modal" onclick="closeCropModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="crop-detail-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="crop-info-grid">
+                    <div class="info-card">
+                        <h3><i class="fas fa-info-circle"></i> <span id="modalBasicInfoLabel">Basic Information</span></h3>
+                        <p id="modalCropBasicInfo"></p>
+                    </div>
+                    <div class="info-card">
+                        <h3><i class="fas fa-seedling"></i> <span id="modalSoilLabel">Soil Requirements</span></h3>
+                        <p id="modalCropSoil"></p>
+                    </div>
+                    <div class="info-card">
+                        <h3><i class="fas fa-calendar-alt"></i> <span id="modalSeasonLabel">Best Season</span></h3>
+                        <p id="modalCropSeason"></p>
+                    </div>
+                    <div class="info-card">
+                        <h3><i class="fas fa-spray-can"></i> <span id="modalPesticidesLabel">Pesticides</span></h3>
+                        <p id="modalCropPesticides"></p>
+                    </div>
+                    <div class="info-card">
+                        <h3><i class="fas fa-tint"></i> <span id="modalWaterLabel">Water Requirements</span></h3>
+                        <p id="modalCropWater"></p>
+                    </div>
+                    <div class="info-card">
+                        <h3><i class="fas fa-clipboard-list"></i> <span id="modalAdditionalLabel">Additional Info</span></h3>
+                        <p id="modalCropAdditional"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="aiChat">
+        <div id="aiChatHeader">
+            <span id="aiAssistantTitle">AI Assistant</span>
+            <div>
+                <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceAssistant()">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button class="ai-close-btn" onclick="closeAssistant()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div id="aiMessages"></div>
+        <div id="aiInputContainer">
+            <input type="text" id="aiInput" placeholder="अपना संदेश लिखें...">
+            <button class="btn-primary" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i> <span id="sendText">भेजें</span>
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Kisan Mitra | All Rights Reserved</p>
+        <p id="footerSlogan">किसानों की समस्याएं, हमारे समाधान</p>
+    </footer>
+
+    <script>
+        let language = 'hi'; // Default language set to Hindi
+        let recognition = null;
+        let isListening = false;
+        let lastBotMessage = '';
+        let lastScrollTop = 0;
+
+        // Enhanced AI Knowledge Base
+        const aiKnowledge = {
+            'weather': {
+                en: "Weather conditions are crucial for farming. Check the weather section for accurate forecasts. Ideal temperature for most crops is between 15-30°C. Rainfall between 50-100cm is good for most crops.",
+                hi: "मौसम की स्थिति खेती के लिए महत्वपूर्ण है। सटीक पूर्वानुमान के लिए मौसम अनुभाग देखें। अधिकांश फसलों के लिए आदर्श तापमान 15-30°C के बीच होता है। अधिकांश फसलों के लिए 50-100 सेमी के बीच वर्षा अच्छी होती है।"
+            },
+            'fertilizer': {
+                en: "Use organic fertilizers like compost and vermicompost. Chemical fertilizers: Urea (46% N), DAP (18% N, 46% P), MOP (60% K). Soil testing helps determine exact fertilizer requirements.",
+                hi: "कम्पोस्ट और वर्मीकम्पोस्ट जैसे जैविक उर्वरकों का उपयोग करें। रासायनिक उर्वरक: यूरिया (46% N), डीएपी (18% N, 46% P), एमओपी (60% K)। मिट्टी की जांच सटीक उर्वरक आवश्यकताओं को निर्धारित करने में मदद करती है।"
+            },
+            'pesticides': {
+                en: "Use neem-based pesticides for organic farming. For chemical control: Carbendazim for fungi, Malathion for insects. Always follow recommended dosage and safety precautions.",
+                hi: "जैविक खेती के लिए नीम आधारित कीटनाशकों का उपयोग करें। रासायनिक नियंत्रण के लिए: कवक के लिए कार्बेंडाजिम, कीटों के लिए मैलाथियान। हमेशा अनुशंसित खुराक और सुरक्षा सावधानियों का पालन करें।"
+            },
+            'irrigation': {
+                en: "Drip irrigation saves 30-50% water. Wheat needs 4-6 irrigations, rice needs standing water. Check soil moisture before irrigation. Rainwater harvesting is recommended.",
+                hi: "ड्रिप सिंचाई 30-50% पानी बचाती है। गेहूं को 4-6 सिंचाई की आवश्यकता होती है, चावल को खड़े पानी की आवश्यकता होती है। सिंचाई से पहले मिट्टी की नमी जांचें। वर्षा जल संचयन की सिफारिश की जाती है।"
+            },
+            'soil': {
+                en: "Loamy soil is best for most crops. Black soil for cotton, sandy soil for groundnut. Maintain pH between 6-7.5. Use soil health card for specific recommendations.",
+                hi: "अधिकांश फसलों के लिए दोमट मिट्टी सबसे अच्छी होती है। कपास के लिए काली मिट्टी, मूंगफली के लिए बलुई मिट्टी। पीएच 6-7.5 के बीच बनाए रखें। विशिष्ट सिफारिशों के लिए मृदा स्वास्थ्य कार्ड का उपयोग करें।"
+            },
+            'crop_rotation': {
+                en: "Practice crop rotation to maintain soil fertility. Legumes like pulses fix nitrogen in soil. Rotate cereals with legumes. Avoid growing same crop repeatedly.",
+                hi: "मिट्टी की उर्वरता बनाए रखने के लिए फसल चक्रण का अभ्यास करें। दालों जैसे फलियां मिट्टी में नाइट्रोजन स्थिर करती हैं। अनाज को फलियों के साथ घुमाएं। एक ही फसल को बार-बार उगाने से बचें।"
+            },
+            'government_schemes': {
+                en: "PM Kisan provides ₹6000/year. Soil Health Card monitors soil health. PM Fasal Bima provides crop insurance. Check schemes section for details.",
+                hi: "पीएम किसान ₹6000/वर्ष प्रदान करता है। मृदा स्वास्थ्य कार्ड मिट्टी के स्वास्थ्य की निगरानी करता है। पीएम फसल बीमा फसल बीमा प्रदान करता है। विवरण के लिए योजनाएं अनुभाग देखें।"
+            },
+            'market_prices': {
+                en: "Check mandi prices section for latest rates. Prices vary by season and demand. Sell directly to FPOs for better prices. Government sets MSP for major crops.",
+                hi: "नवीनतम दरों के लिए मंडी मूल्य अनुभाग देखें। मौसम और मांग के अनुसार कीमतें अलग-अलग होती हैं। बेहतर कीमतों के लिए सीधे एफपीओ को बेचें। सरकार प्रमुख फसलों के लिए एमएसपी निर्धारित करती है।"
+            },
+            'greeting': {
+                en: "Hello! I'm Kisan Mitra AI Assistant. How can I help you with farming today?",
+                hi: "नमस्ते! मैं किसान मित्र एआई सहायक हूं। आज मैं आपकी खेती में कैसे मदद कर सकता हूं?"
+            },
+            'help': {
+                en: "I can help with: weather information, crop cultivation, fertilizers, pesticides, irrigation, soil health, government schemes, and market prices. Just ask!",
+                hi: "मैं इनमें मदद कर सकता हूं: मौसम की जानकारी, फसल की खेती, उर्वरक, कीटनाशक, सिंचाई, मिट्टी का स्वास्थ्य, सरकारी योजनाएं, और बाजार की कीमतें। बस पूछें!"
+            }
+        };
+
+        // Crop data with detailed information
+        const cropsData = {
+            wheat: {
+                name_en: "Wheat",
+                name_hi: "गेहूँ",
+                soil_en: "Well-drained loamy soil with pH between 6.0-7.5",
+                soil_hi: "अच्छी जल निकासी वाली दोमट मिट्टी जिसका पीएच 6.0-7.5 के बीच हो",
+                season_en: "Rabi season (October to December)",
+                season_hi: "रबी मौसम (अक्टूबर से दिसंबर)",
+                pesticides_en: "Carbendazim for fungal diseases, Malathion for insects",
+                pesticides_hi: "फफूंदी रोगों के लिए कार्बेंडाजिम, कीटों के लिए मैलाथियान",
+                water_en: "Requires 4-6 irrigations during growth cycle",
+                water_hi: "विकास चक्र के दौरान 4-6 सिंचाई की आवश्यकता होती है",
+                basic_en: "Wheat is a staple food grain in India. It is rich in carbohydrates, proteins, and dietary fiber.",
+                basic_hi: "गेहूँ भारत में एक प्रमुख खाद्य अनाज है। यह कार्बोहाइड्रेट, प्रोटीन और आहार फाइबर से भरपूर है।",
+                additional_en: "Common varieties: Lokwan, Sharbati, Durum. Average yield: 3-4 tons per hectare.",
+                additional_hi: "सामान्य किस्में: लोकवान, शरबती, ड्यूरम। औसत उपज: प्रति हेक्टेयर 3-4 टन।"
+            },
+            rice: {
+                name_en: "Rice",
+                name_hi: "चावल",
+                soil_en: "Clayey soil that retains water well, pH 5.0-6.5",
+                soil_hi: "चिकनी मिट्टी जो पानी को अच्छी तरह रोकती है, पीएच 5.0-6.5",
+                season_en: "Kharif season (June to September)",
+                season_hi: "खरीफ मौसम (जून से सितंबर)",
+                pesticides_en: "Chlorpyriphos for stem borer, Tricyclazole for blast",
+                pesticides_hi: "तना छेदक के लिए क्लोरपायरीफॉस, ब्लास्ट के लिए ट्राइसाइक्लाजोल",
+                water_en: "Requires standing water for most of growth period",
+                water_hi: "अधिकांश विकास अवधि के लिए खड़े पानी की आवश्यकता होती है",
+                basic_en: "Rice is the primary staple food for a large part of the world's population.",
+                basic_hi: "चावल दुनिया की बड़ी आबादी का प्राथमिक खाद्यान्न है।",
+                additional_en: "Common varieties: Basmati, Sona Masoori, Jasmine. Average yield: 2-3 tons per hectare.",
+                additional_hi: "सामान्य किस्में: बासमती, सोना मसूरी, जैस्मिन। औसत उपज: प्रति हेक्टेयर 2-3 टन।"
+            },
+            sugarcane: {
+                name_en: "Sugarcane",
+                name_hi: "गन्ना",
+                soil_en: "Deep, well-drained loamy soil with pH 6.5-7.5",
+                soil_hi: "गहरी, अच्छी जल निकासी वाली दोमट मिट्टी जिसका पीएच 6.5-7.5 हो",
+                season_en: "Throughout the year, but best in February-May",
+                season_hi: "पूरे साल, लेकिन फरवरी-मई में सबसे अच्छा",
+                pesticides_en: "Chlorantraniliprole for borers, Imidacloprid for aphids",
+                pesticides_hi: "बोरर के लिए क्लोरेंट्रानिलिप्रोल, एफिड्स के लिए इमिडाक्लोप्रिड",
+                water_en: "Requires frequent irrigation, especially during dry spells",
+                water_hi: "विशेष रूप से सूखे के दौरान लगातार सिंचाई की आवश्यकता होती है",
+                basic_en: "Sugarcane is a major cash crop used for sugar production and biofuel.",
+                basic_hi: "गन्ना एक प्रमुख नकदी फसल है जिसका उपयोग चीनी उत्पादन और बायोफ्यूल के लिए किया जाता है।",
+                additional_en: "Common varieties: Co 86032, CoM 0265, CoC 671. Average yield: 70-100 tons per hectare.",
+                additional_hi: "सामान्य किस्में: Co 86032, CoM 0265, CoC 671। औसत उपज: प्रति हेक्टेयर 70-100 टन।"
+            },
+            til: {
+                name_en: "Sesame (Til)",
+                name_hi: "तिल",
+                soil_en: "Well-drained sandy loam soil with pH 5.5-8.0",
+                soil_hi: "अच्छी जल निकासी वाली बलुई दोमट मिट्टी जिसका पीएच 5.5-8.0 हो",
+                season_en: "Kharif and summer seasons",
+                season_hi: "खरीफ और गर्मी के मौसम",
+                pesticides_en: "Neem-based products for pest control",
+                pesticides_hi: "कीट नियंत्रण के लिए नीम आधारित उत्पाद",
+                water_en: "Drought-tolerant but requires irrigation during flowering",
+                water_hi: "सूखा सहनशील लेकिन फूल आने के दौरान सिंचाई की आवश्यकता होती है",
+                basic_en: "Sesame is an oilseed crop known for its high oil content and nutritional value.",
+                basic_hi: "तिल एक तिलहन फसल है जो अपने उच्च तेल सामग्री और पोषण मूल्य के लिए जानी जाती है।",
+                additional_en: "Common varieties: T-12, T-13, Gujarat Til-1. Average yield: 400-600 kg per hectare.",
+                additional_hi: "सामान्य किस्में: T-12, T-13, गुजरात तिल-1। औसत उपज: प्रति हेक्टेयर 400-600 किलोग्राम।"
+            },
+            mustard: {
+                name_en: "Mustard",
+                name_hi: "सरसों",
+                soil_en: "Well-drained loamy soil with pH 6.0-7.5",
+                soil_hi: "अच्छी जल निकासी वाली दोमट मिट्टी जिसका पीएच 6.0-7.5 हो",
+                season_en: "Rabi season (October to November)",
+                season_hi: "रबी मौसम (अक्टूबर से नवंबर)",
+                pesticides_en: "Endosulfan for aphids, Mancozeb for white rust",
+                pesticides_hi: "एफिड्स के लिए एंडोसल्फान, सफेद जंग के लिए मैन्कोजेब",
+                water_en: "Requires 2-3 irrigations during growth cycle",
+                water_hi: "विकास चक्र के दौरान 2-3 सिंचाई की आवश्यकता होती है",
+                basic_en: "Mustard is an important oilseed crop grown for its seeds which are used to make mustard oil.",
+                basic_hi: "सरसों एक महत्वपूर्ण तिलहन फसल है जिसे इसके बीजों के लिए उगाया जाता है जिनसे सरसों का तेल बनाया जाता है।",
+                additional_en: "Common varieties: Pusa Bold, RH-30, Varuna. Average yield: 1-1.5 tons per hectare.",
+                additional_hi: "सामान्य किस्में: पूसा बोल्ड, आरएच-30, वरुण। औसत उपज: प्रति हेक्टेयर 1-1.5 टन।"
+            },
+            bajra: {
+                name_en: "Pearl Millet (Bajra)",
+                name_hi: "बाजरा",
+                soil_en: "Well-drained sandy loam soil, tolerant to poor soils",
+                soil_hi: "अच्छी जल निकासी वाली बलुई दोमट मिट्टी, खराब मिट्टी के प्रति सहनशील",
+                season_en: "Kharif season (June to July)",
+                season_hi: "खरीफ मौसम (जून से जुलाई)",
+                pesticides_en: "Carbaryl for shoot fly, Chlorpyriphos for stem borer",
+                pesticides_hi: "शूट फ्लाई के लिए कार्बारिल, तना छेदक के लिए क्लोरपायरीफॉस",
+                water_en: "Drought-tolerant, requires minimal irrigation",
+                water_hi: "सूखा सहनशील, न्यूनतम सिंचाई की आवश्यकता होती है",
+                basic_en: "Pearl millet is a drought-resistant cereal crop grown in arid and semi-arid regions.",
+                basic_hi: "बाजरा एक सूखा-प्रतिरोधी अनाज फसल है जो शुष्क और अर्ध-शुष्क क्षेत्रों में उगाई जाती है।",
+                additional_en: "Common varieties: HHB 67, RHB 173, PCB 164. Average yield: 1-1.5 tons per hectare.",
+                additional_hi: "सामान्य किस्में: HHB 67, RHB 173, PCB 164। औसत उपज: प्रति हेक्टेयर 1-1.5 टन।"
+            },
+            corn: {
+                name_en: "Corn",
+                name_hi: "मक्का",
+                soil_en: "Well-drained loamy soil with pH 6.0-7.5",
+                soil_hi: "अच्छी जल निकासी वाली दोमट मिट्टी जिसका पीएच 6.0-7.5 हो",
+                season_en: "Summer season (March to May)",
+                season_hi: "गर्मी का मौसम (मार्च से मई)",
+                pesticides_en: "Neem oil for general pest control",
+                pesticides_hi: "सामान्य कीट नियंत्रण के लिए नीम का तेल",
+                water_en: "Moderate water requirements, avoid waterlogging",
+                water_hi: "मध्यम पानी की आवश्यकता, जलभराव से बचें",
+                basic_en: "Corn is a staple cereal crop grown for its kernels which are used as food and animal feed.",
+                basic_hi: "मक्का एक प्रमुख अनाज फसल है जिसे इसके दानों के लिए उगाया जाता है जो भोजन और पशु आहार के रूप में उपयोग किए जाते हैं।",
+                additional_en: "Common varieties: Sweet corn, Popcorn, Dent corn. Average yield: 2-3 tons per hectare.",
+                additional_hi: "सामान्य किस्में: स्वीट कॉर्न, पॉपकॉर्न, डेंट कॉर्न। औसत उपज: प्रति हेक्टेयर 2-3 टन।"
+            },
+            peanuts: {
+                name_en: "Peanuts",
+                name_hi: "मूंगफली",
+                soil_en: "Well-drained sandy loam soil with pH 5.5-7.0",
+                soil_hi: "अच्छी जल निकासी वाली बलुई दोमट मिट्टी जिसका पीएच 5.5-7.0 हो",
+                season_en: "Kharif season (June to July) and summer",
+                season_hi: "खरीफ मौसम (जून से जुलाई) और गर्मी",
+                pesticides_en: "Chlorpyriphos for leaf miner, Carbendazim for leaf spot",
+                pesticides_hi: "पत्ती खाने वाले कीट के लिए क्लोरपायरीफॉस, पत्ती धब्बा के लिए कार्बेंडाजिम",
+                water_en: "Requires moderate irrigation, sensitive to waterlogging",
+                water_hi: "मध्यम सिंचाई की आवश्यकता, जलभराव के प्रति संवेदनशील",
+                basic_en: "Peanuts are legumes grown for their edible seeds which are rich in protein and oil.",
+                basic_hi: "मूंगफली फलियां हैं जिन्हें उनके खाद्य बीजों के लिए उगाया जाता है जो प्रोटीन और तेल से भरपूर होते हैं।",
+                additional_en: "Common varieties: TG 37A, JL 24, Kadiri. Average yield: 1-2 tons per hectare.",
+                additional_hi: "सामान्य किस्में: TG 37A, JL 24, कदिरी। औसत उपज: प्रति हेक्टेयर 1-2 टन।"
+            },
+            cotton: {
+                name_en: "Cotton",
+                name_hi: "कपास",
+                soil_en: "Well-drained black cotton soil with pH 6.0-8.0",
+                soil_hi: "अच्छी जल निकासी वाली काली कपास मिट्टी जिसका पीएच 6.0-8.0 हो",
+                season_en: "Kharif season (June to July)",
+                season_hi: "खरीफ मौसम (जून से जुलाई)",
+                pesticides_en: "Monocrotophos for bollworms, Acephate for sucking pests",
+                pesticides_hi: "बॉलवर्म के लिए मोनोक्रोटोफोस, चूसने वाले कीटों के लिए एसीफेट",
+                water_en: "Requires 5-6 irrigations during growth cycle",
+                water_hi: "विकास चक्र के दौरान 5-6 सिंचाई की आवश्यकता होती है",
+                basic_en: "Cotton is a fiber crop grown for its soft, fluffy fiber used in textiles.",
+                basic_hi: "कपास एक रेशेदार फसल है जिसे इसके नरम, रोएँदार रेशे के लिए उगाया जाता है जो वस्त्रों में उपयोग किया जाता है।",
+                additional_en: "Common varieties: Bt cotton, Desi cotton. Average yield: 2-3 tons per hectare.",
+                additional_hi: "सामान्य किस्में: बीटी कपास, देसी कपास। औसत उपज: प्रति हेक्टेयर 2-3 टन।"
+            },
+            soybean: {
+                name_en: "Soybean",
+                name_hi: "सोयाबीन",
+                soil_en: "Well-drained loamy soil with pH 6.0-7.5",
+                soil_hi: "अच्छी जल निकासी वाली दोमट मिट्टी जिसका पीएच 6.0-7.5 हो",
+                season_en: "Kharif season (June to July)",
+                season_hi: "खरीफ मौसम (जून से जुलाई)",
+                pesticides_en: "Chlorpyriphos for girdle beetle, Carbendazim for rust",
+                pesticides_hi: "गर्डल बीटल के लिए क्लोरपायरीफॉस, जंग के लिए कार्बेंडाजिम",
+                water_en: "Requires 2-3 irrigations during critical growth stages",
+                water_hi: "महत्वपूर्ण विकास चरणों के दौरान 2-3 सिंचाई की आवश्यकता होती है",
+                basic_en: "Soybean is a legume grown for its edible beans which are rich in protein and oil.",
+                basic_hi: "सोयाबीन एक फलीदार फसल है जिसे इसके खाद्य बीन्स के लिए उगाया जाता है जो प्रोटीन और तेल से भरपूर होते हैं।",
+                additional_en: "Common varieties: JS 335, NRC 37, MAUS 71. Average yield: 2-3 tons per hectare.",
+                additional_hi: "सामान्य किस्में: JS 335, NRC 37, MAUS 71। औसत उपज: प्रति हेक्टेयर 2-3 टन।"
+            },
+            potato: {
+                name_en: "Potato",
+                name_hi: "आलू",
+                soil_en: "Well-drained sandy loam soil with pH 5.0-6.5",
+                soil_hi: "अच्छी जल निकासी वाली बलुई दोमट मिट्टी जिसका पीएच 5.0-6.5 हो",
+                season_en: "Rabi season (October to December)",
+                season_hi: "रबी मौसम (अक्टूबर से दिसंबर)",
+                pesticides_en: "Mancozeb for early blight, Chlorpyriphos for potato tuber moth",
+                pesticides_hi: "अर्ली ब्लाइट के लिए मैन्कोजेब, आलू ट्यूबर मोथ के लिए क्लोरपायरीफॉस",
+                water_en: "Requires 4-5 irrigations during growth cycle",
+                water_hi: "विकास चक्र के दौरान 4-5 सिंचाई की आवश्यकता होती है",
+                basic_en: "Potato is a starchy tuber crop that is a staple food in many parts of the world.",
+                basic_hi: "आलू एक स्टार्चयुक्त कंद फसल है जो दुनिया के कई हिस्सों में एक प्रमुख भोजन है।",
+                additional_en: "Common varieties: Kufri Jyoti, Kufri Pukhraj, Kufri Chipsona. Average yield: 20-25 tons per hectare.",
+                additional_hi: "सामान्य किस्में: कुफरी ज्योति, कुफरी पुखराज, कुफरी चिपसोना। औसत उपज: प्रति हेक्टेयर 20-25 टन।"
+            },
+            tomato: {
+                name_en: "Tomato",
+                name_hi: "टमाटर",
+                soil_en: "Well-drained loamy soil with pH 6.0-7.0",
+                soil_hi: "अच्छी जल निकासी वाली दोमट मिट्टी जिसका पीएच 6.0-7.0 हो",
+                season_en: "Throughout the year, but best in winter",
+                season_hi: "पूरे साल, लेकिन सर्दियों में सबसे अच्छा",
+                pesticides_en: "Carbendazim for fungal diseases, Imidacloprid for sucking pests",
+                pesticides_hi: "फफूंदी रोगों के लिए कार्बेंडाजिम, चूसने वाले कीटों के लिए इमिडाक्लोप्रिड",
+                water_en: "Requires regular irrigation, avoid water stress",
+                water_hi: "नियमित सिंचाई की आवश्यकता, पानी के तनाव से बचें",
+                basic_en: "Tomato is a widely cultivated fruit vegetable rich in vitamins and antioxidants.",
+                basic_hi: "टमाटर एक व्यापक रूप से उगाई जाने वाली फल सब्जी है जो विटामिन और एंटीऑक्सिडेंट से भरपूर है।",
+                additional_en: "Common varieties: Pusa Ruby, Arka Vikas, Arka Abha. Average yield: 25-30 tons per hectare.",
+                additional_hi: "सामान्य किस्में: पूसा रूबी, अर्का विकास, अर्का आभा। औसत उपज: प्रति हेक्टेयर 25-30 टन।"
+            }
+        };
+
+        // Indian states, districts and cities data (simplified for demo)
+        const indianLocations = {
+            "Andhra Pradesh": {
+                "Anantapur": ["Anantapur", "Dharmavaram", "Guntakal", "Hindupur"],
+                "Chittoor": ["Chittoor", "Tirupati", "Madanapalle", "Puttur"],
+                "East Godavari": ["Kakinada", "Rajahmundry", "Amalapuram", "Peddapuram"],
+                "Guntur": ["Guntur", "Tenali", "Narasaraopet", "Mangalagiri"]
+            },
+            "Assam": {
+                "Barpeta": ["Barpeta", "Barpeta Road", "Sarthebari", "Howli"],
+                "Bongaigaon": ["Bongaigaon", "North Salmara", "Boitamari", "Srijangram"],
+                "Cachar": ["Silchar", "Lakhipur", "Sonai", "Udharbond"],
+                "Darrang": ["Mangaldoi", "Kharupatia", "Sipajhar", "Behali"]
+            },
+            "Bihar": {
+                "Araria": ["Araria", "Forbesganj", "Jokihat", "Raniganj"],
+                "Arwal": ["Arwal", "Kaler", "Karpi", "Sonbhadra"],
+                "Aurangabad": ["Aurangabad", "Daudnagar", "Rafiganj", "Obra"],
+                "Banka": ["Banka", "Katoria", "Belhar", "Amarpur"]
+            },
+            "Delhi": {
+                "Central Delhi": ["Daryaganj", "Paharganj", "Karol Bagh", "Jhandewalan"],
+                "East Delhi": ["Preet Vihar", "Mayur Vihar", "Geeta Colony", "Laxmi Nagar"],
+                "New Delhi": ["Connaught Place", "Chanakyapuri", "Parliament Street"],
+                "North Delhi": ["Civil Lines", "Kashmere Gate", "Kamla Nagar", "Malka Ganj"]
+            },
+            "Gujarat": {
+                "Ahmedabad": ["Ahmedabad", "Gandhinagar", "Sanand", "Viramgam"],
+                "Amreli": ["Amreli", "Savarkundla", "Rajula", "Bagasara"],
+                "Anand": ["Anand", "Petlad", "Borsad", "Khambhat"],
+                "Aravalli": ["Modasa", "Bayad", "Dhansura", "Malpur"]
+            },
+            "Haryana": {
+                "Ambala": ["Ambala", "Ambala Cantt", "Barara", "Naraingarh"],
+                "Bhiwani": ["Bhiwani", "Tosham", "Siwani", "Loharu"],
+                "Charkhi Dadri": ["Charkhi Dadri", "Badhra", "Bond Kalan"],
+                "Faridabad": ["Faridabad", "Ballabgarh", "Tigaon", "Badkhal"]
+            },
+            "Himachal Pradesh": {
+                "Bilaspur": ["Bilaspur", "Ghumarwin", "Jhanduta", "Naina Devi"],
+                "Chamba": ["Chamba", "Dalhousie", "Bharmour", "Bhattiyat"],
+                "Hamirpur": ["Hamirpur", "Barsar", "Nadaun", "Bhoranj"],
+                "Kangra": ["Dharamshala", "Kangra", "Palampur", "Nurpur"]
+            },
+            "Jharkhand": {
+                "Bokaro": ["Bokaro Steel City", "Chas", "Bermo", "Jaridih"],
+                "Chatra": ["Chatra", "Hunterganj", "Simaria", "Pratappur"],
+                "Deoghar": ["Deoghar", "Madhupur", "Jasidih", "Sarath"],
+                "Dhanbad": ["Dhanbad", "Jharia", "Katras", "Chirkunda"]
+            },
+            "Karnataka": {
+                "Bagalkot": ["Bagalkot", "Badami", "Hungund", "Jamkhandi"],
+                "Bangalore Rural": ["Devanahalli", "Doddaballapura", "Hoskote", "Nelamangala"],
+                "Bangalore Urban": ["Bangalore", "Anekal", "Yelahanka", "Kengeri"],
+                "Belgaum": ["Belgaum", "Bailhongal", "Chikodi", "Gokak"]
+            },
+            "Kerala": {
+                "Alappuzha": ["Alappuzha", "Cherthala", "Karthikappally", "Mavelikkara"],
+                "Ernakulam": ["Kochi", "Aluva", "Kothamangalam", "Muvattupuzha"],
+                "Idukki": ["Painavu", "Thodupuzha", "Devikulam", "Udumbanchola"],
+                "Kannur": ["Kannur", "Thalassery", "Taliparamba", "Payyannur"]
+            },
+            "Madhya Pradesh": {
+                "Agar Malwa": ["Agar", "Badod", "Nalkheda", "Susner"],
+                "Alirajpur": ["Alirajpur", "Jobat", "Bhabra", "Sondwa"],
+                "Anuppur": ["Anuppur", "Kotma", "Jaithari", "Pushparajgarh"],
+                "Ashoknagar": ["Ashoknagar", "Isagarh", "Mungaoli", "Chanderi"]
+            },
+            "Maharashtra": {
+                "Ahmednagar": ["Ahmednagar", "Shrirampur", "Kopargaon", "Sangamner"],
+                "Akola": ["Akola", "Akot", "Balapur", "Patur"],
+                "Amravati": ["Amravati", "Achalpur", "Daryapur", "Anjangaon"],
+                "Aurangabad": ["Aurangabad", "Jalna", "Sillod", "Vaijapur"]
+            },
+            "Punjab": {
+                "Amritsar": ["Amritsar", "Ajnala", "Attari", "Baba Bakala"],
+                "Barnala": ["Barnala", "Tapa", "Bhadaur", "Mehal Kalan"],
+                "Bathinda": ["Bathinda", "Rampura Phul", "Talwandi Sabo", "Maur"],
+                "Faridkot": ["Faridkot", "Jaitu", "Kotkapura", "Sadiq"]
+            },
+            "Rajasthan": {
+                "Ajmer": ["Ajmer", "Kekri", "Kishangarh", "Sarwar"],
+                "Alwar": ["Alwar", "Bhiwadi", "Behror", "Tijara"],
+                "Banswara": ["Banswara", "Bagidora", "Kushalgarh", "Ghatol"],
+                "Baran": ["Baran", "Atru", "Chhabra", "Kishanganj"]
+            },
+            "Tamil Nadu": {
+                "Ariyalur": ["Ariyalur", "Udayarpalayam", "Sendurai", "Andimadam"],
+                "Chennai": ["Chennai", "Ambattur", "Avadi", "Guindy"],
+                "Coimbatore": ["Coimbatore", "Mettupalayam", "Pollachi", "Valparai"],
+                "Cuddalore": ["Cuddalore", "Panruti", "Neyveli", "Virudhachalam"]
+            },
+            "Telangana": {
+                "Adilabad": ["Adilabad", "Nirmal", "Mancherial", "Kagaznagar"],
+                "Hyderabad": ["Hyderabad", "Secunderabad", "Miyapur", "Gachibowli"],
+                "Karimnagar": ["Karimnagar", "Jagtial", "Peddapalli", "Sircilla"],
+                "Khammam": ["Khammam", "Kothagudem", "Palwancha", "Madhira"]
+            },
+            "Uttar Pradesh": {
+                "Agra": ["Agra", "Firozabad", "Mathura", "Aligarh"],
+                "Allahabad": ["Allahabad", "Kaushambi", "Fatehpur", "Pratapgarh"],
+                "Lucknow": ["Lucknow", "Barabanki", "Unnao", "Raebareli"],
+                "Varanasi": ["Varanasi", "Jaunpur", "Ghazipur", "Chandauli"]
+            },
+            "West Bengal": {
+                "Bankura": ["Bankura", "Bishnupur", "Khatra", "Sonamukhi"],
+                "Bardhaman": ["Bardhaman", "Durgapur", "Asansol", "Kalna"],
+                "Birbhum": ["Suri", "Bolpur", "Rampurhat", "Dubrajpur"],
+                "Kolkata": ["Kolkata", "Howrah", "Salt Lake", "New Town"]
+            }
+        };
+
+        // Crop names in both languages for mandi prices
+        const cropNames = {
+            wheat: { en: "Wheat", hi: "गेहूँ" },
+            rice: { en: "Rice", hi: "चावल" },
+            sugarcane: { en: "Sugarcane", hi: "गन्ना" },
+            til: { en: "Sesame", hi: "तिल" },
+            mustard: { en: "Mustard", hi: "सरसों" },
+            potato: { en: "Potato", hi: "आलू" },
+            tomato: { en: "Tomato", hi: "टमाटर" },
+            bajra: { en: "Pearl Millet", hi: "बाजरा" },
+            corn: { en: "Corn", hi: "मक्का" },
+            peanuts: { en: "Peanuts", hi: "मूंगफली" },
+            cotton: { en: "Cotton", hi: "कपास" },
+            soybean: { en: "Soybean", hi: "सोयाबीन" }
+        };
+
+        // Initialize speech recognition
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                
+                recognition.onstart = function() {
+                    isListening = true;
+                    document.getElementById('voiceBtn').classList.add('listening');
+                };
+                
+                recognition.onend = function() {
+                    isListening = false;
+                    document.getElementById('voiceBtn').classList.remove('listening');
+                };
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('aiInput').value = transcript;
+                    sendMessage();
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error', event.error);
+                    isListening = false;
+                    document.getElementById('voiceBtn').classList.remove('listening');
+                };
+            } else {
+                console.log('Speech recognition not supported');
+                alert(language === 'hi' ? 'वॉयस रिकग्निशन सपोर्टेड नहीं है' : 'Voice recognition not supported');
+            }
+        }
+
+        // Text-to-speech function
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                const speech = new SpeechSynthesisUtterance();
+                speech.text = text;
+                speech.lang = language === 'hi' ? 'hi-IN' : 'en-US';
+                speech.rate = 0.9;
+                speech.pitch = 1;
+                
+                document.getElementById('speakBtn').classList.add('speaking');
+                
+                speech.onend = function() {
+                    document.getElementById('speakBtn').classList.remove('speaking');
+                };
+                
+                window.speechSynthesis.speak(speech);
+            } else {
+                alert(language === 'hi' ? 'टेक्स्ट-टू-स्पीच सपोर्टेड नहीं है' : 'Text-to-speech not supported');
+            }
+        }
+
+        // Speak the last bot response
+        function speakResponse() {
+            if (lastBotMessage) {
+                speakText(lastBotMessage);
+            }
+        }
+
+        // Toggle voice assistant
+        function toggleVoiceAssistant() {
+            if (!recognition) {
+                initSpeechRecognition();
+            }
+            
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.lang = language === 'hi' ? 'hi-IN' : 'en-US';
+                recognition.start();
+            }
+        }
+
+        // Enhanced AI response function
+        function getAIResponse(input) {
+            const inputLower = input.toLowerCase();
+            
+            // Check for keywords in the input
+            if (inputLower.includes('weather') || inputLower.includes('मौसम')) {
+                return aiKnowledge.weather[language];
+            } else if (inputLower.includes('fertilizer') || inputLower.includes('उर्वरक') || inputLower.includes('खाद')) {
+                return aiKnowledge.fertilizer[language];
+            } else if (inputLower.includes('pesticide') || inputLower.includes('कीटनाशक')) {
+                return aiKnowledge.pesticides[language];
+            } else if (inputLower.includes('irrigation') || inputLower.includes('सिंचाई') || inputLower.includes('पानी')) {
+                return aiKnowledge.irrigation[language];
+            } else if (inputLower.includes('soil') || inputLower.includes('मिट्टी')) {
+                return aiKnowledge.soil[language];
+            } else if (inputLower.includes('crop rotation') || inputLower.includes('फसल चक्र')) {
+                return aiKnowledge.crop_rotation[language];
+            } else if (inputLower.includes('government') || inputLower.includes('सरकार') || inputLower.includes('योजना')) {
+                return aiKnowledge.government_schemes[language];
+            } else if (inputLower.includes('price') || inputLower.includes('मूल्य') || inputLower.includes('दाम')) {
+                return aiKnowledge.market_prices[language];
+            } else if (inputLower.includes('hello') || inputLower.includes('hi') || inputLower.includes('नमस्ते') || inputLower.includes('हैलो')) {
+                return aiKnowledge.greeting[language];
+            } else if (inputLower.includes('help') || inputLower.includes('मदद')) {
+                return aiKnowledge.help[language];
+            } else {
+                return language === 'hi' 
+                    ? 'मैं इस प्रश्न का उत्तर नहीं जानता। कृपया मौसम, उर्वरक, कीटनाशक, सिंचाई, मिट्टी, या सरकारी योजनाओं के बारे में पूछें।' 
+                    : "I don't know the answer to that question. Please ask about weather, fertilizers, pesticides, irrigation, soil, or government schemes.";
+            }
+        }
+
+        function setLanguage(lang) {
+            language = lang;
+            updateAllTexts();
+        }
+
+        function updateAllTexts() {
+            // Update all text elements based on current language
+            updateHeaderTexts();
+            updateIntroTexts();
+            updateFeatureTexts();
+            updateWeatherTexts();
+            updateMandiTexts();
+            updateSchemesTexts();
+            updateCropsTexts();
+            updateModalTexts();
+            updateAITexts();
+            updateFooterTexts();
+            
+            // Refresh dynamic content
+            displayCrops();
+            displaySchemes();
+            fetchMandi();
+            updateLocationDropdowns();
+        }
+
+        function updateHeaderTexts() {
+            document.querySelector('.slogan').innerText = language === 'hi' ? 'किसानों की समस्याएं, हमारे समाधान' : 'Farmers\' Problems, Our Solutions';
+        }
+
+        function updateIntroTexts() {
+            document.getElementById('introTitle').innerText = language === 'hi' ? 'Kisan Mitra में आपका स्वागत है' : 'Welcome to Kisan Mitra';
+            document.getElementById('introText').innerText = language === 'hi' 
+                ? 'कृषि सफलता के लिए आपका डिजिटल साथी। मौसम अपडेट, बाजार मूल्य, सरकारी योजनाएं और फसल की जानकारी एक ही स्थान पर प्राप्त करें।'
+                : 'Your digital companion for farming success. Get weather updates, market prices, government schemes, and crop information all in one place.';
+            document.getElementById('exploreFeaturesText').innerText = language === 'hi' ? 'विशेषताएँ देखें' : 'Explore Features';
+        }
+
+        function updateFeatureTexts() {
+            document.getElementById('featuresTitle').innerText = language === 'hi' ? 'विशेषताएँ' : 'Features';
+            document.getElementById('weatherFeature').innerText = language === 'hi' ? 'मौसम' : 'Weather';
+            document.getElementById('weatherDesc').innerText = language === 'hi' ? 'अपने खेत के लिए सटीक मौसम पूर्वानुमान प्राप्त करें' : 'Get accurate weather forecasts for your farm';
+            document.getElementById('mandiFeature').innerText = language === 'hi' ? 'मंडी मूल्य' : 'Mandi Prices';
+            document.getElementById('mandiDesc').innerText = language === 'hi' ? 'अपनी फसलों के लिए नवीनतम बाजार मूल्य जांचें' : 'Check latest market prices for your crops';
+            document.getElementById('schemesFeature').innerText = language === 'hi' ? 'सरकारी योजनाएं' : 'Govt Schemes';
+            document.getElementById('schemesDesc').innerText = language === 'hi' ? 'किसानों के लिए सरकारी योजनाओं का पता लगाएं' : 'Explore government schemes for farmers';
+            document.getElementById('cropsFeature').innerText = language === 'hi' ? 'फसल जानकारी' : 'Crops Info';
+            document.getElementById('cropsDesc').innerText = language === 'hi' ? 'विभिन्न फसलों के बारे में विस्तृत जानकारी प्राप्त करें' : 'Get detailed information about various crops';
+            document.getElementById('aiFeature').innerText = language === 'hi' ? 'AI सहायक' : 'AI Assistant';
+            document.getElementById('aiDesc').innerText = language === 'hi' ? 'अपने कृषि प्रश्नों के उत्तर प्राप्त करें' : 'Get answers to your farming questions';
+        }
+
+        function updateWeatherTexts() {
+            document.getElementById('weatherTitle').innerText = language === 'hi' ? 'मौसम' : 'Weather';
+            document.getElementById('checkWeatherText').innerText = language === 'hi' ? 'मौसम जांचें' : 'Check Weather';
+            document.getElementById('temperatureLabel').innerText = language === 'hi' ? 'तापमान' : 'Temperature';
+            document.getElementById('humidityLabel').innerText = language === 'hi' ? 'आर्द्रता' : 'Humidity';
+            document.getElementById('windSpeedLabel').innerText = language === 'hi' ? 'हवा की गति' : 'Wind Speed';
+        }
+
+        function updateMandiTexts() {
+            document.getElementById('mandiTitle').innerText = language === 'hi' ? 'मंडी कीमतें' : 'Mandi Prices';
+            document.getElementById('cropHeader').innerText = language === 'hi' ? 'फसल' : 'Crop';
+            document.getElementById('marketPriceHeader').innerText = language === 'hi' ? 'बाजार मूल्य (₹/क्विंटल)' : 'Market Price (₹/quintal)';
+            document.getElementById('wholesalerPriceHeader').innerText = language === 'hi' ? 'थोक व्यापारी मूल्य (₹/क्विंटल)' : 'Wholesaler Price (₹/quintal)';
+            document.getElementById('profitHeader').innerText = language === 'hi' ? 'लाभ (₹/क्विंटल)' : 'Profit (₹/quintal)';
+        }
+
+        function updateSchemesTexts() {
+            document.getElementById('schemesTitle').innerText = language === 'hi' ? 'सरकारी योजनाएँ' : 'Government Schemes';
+        }
+
+        function updateCropsTexts() {
+            document.getElementById('cropsTitle').innerText = language === 'hi' ? 'फसलें जानकारी' : 'Crops Info';
+        }
+
+        function updateModalTexts() {
+            document.getElementById('modalBasicInfoLabel').innerText = language === 'hi' ? 'मूल जानकारी' : 'Basic Information';
+            document.getElementById('modalSoilLabel').innerText = language === 'hi' ? 'मिट्टी की आवश्यकताएं' : 'Soil Requirements';
+            document.getElementById('modalSeasonLabel').innerText = language === 'hi' ? 'सर्वोत्तम मौसम' : 'Best Season';
+            document.getElementById('modalPesticidesLabel').innerText = language === 'hi' ? 'कीटनाशक' : 'Pesticides';
+            document.getElementById('modalWaterLabel').innerText = language === 'hi' ? 'पानी की आवश्यकताएं' : 'Water Requirements';
+            document.getElementById('modalAdditionalLabel').innerText = language === 'hi' ? 'अतिरिक्त जानकारी' : 'Additional Info';
+        }
+
+        function updateAITexts() {
+            document.getElementById('aiAssistantTitle').innerText = language === 'hi' ? 'AI सहायक' : 'AI Assistant';
+            document.getElementById('aiInput').placeholder = language === 'hi' ? 'अपना संदेश लिखें...' : 'Type your message...';
+            document.getElementById('sendText').innerText = language === 'hi' ? 'भेजें' : 'Send';
+        }
+
+        function updateFooterTexts() {
+            document.getElementById('footerSlogan').innerText = language === 'hi' ? 'किसानों की समस्याएं, हमारे समाधान' : 'Farmers\' Problems, Our Solutions';
+        }
+
+        function updateLocationDropdowns() {
+            const stateSelect = document.getElementById('stateSelect');
+            const districtSelect = document.getElementById('districtSelect');
+            const citySelect = document.getElementById('citySelect');
+            
+            // Update state dropdown placeholder
+            stateSelect.options[0].text = language === 'hi' ? 'राज्य चुनें' : 'Select State';
+            districtSelect.options[0].text = language === 'hi' ? 'जिला चुनें' : 'Select District';
+            citySelect.options[0].text = language === 'hi' ? 'शहर चुनें' : 'Select City';
+        }
+
+        function showFeatures() {
+            document.getElementById('features').style.display = 'block';
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function openAssistant() {
+            document.getElementById('aiChat').style.display = 'flex';
+        }
+
+        function closeAssistant() {
+            document.getElementById('aiChat').style.display = 'none';
+        }
+
+        // Function to open crop detail modal
+        function openCropModal(cropKey) {
+            const crop = cropsData[cropKey];
+            if (!crop) {
+                console.error(`Crop data not found for key: ${cropKey}`);
+                return;
+            }
+            
+            document.getElementById('modalCropName').textContent = language === 'hi' ? crop.name_hi : crop.name_en;
+            document.getElementById('modalCropBasicInfo').textContent = language === 'hi' ? crop.basic_hi : crop.basic_en;
+            document.getElementById('modalCropSoil').textContent = language === 'hi' ? crop.soil_hi : crop.soil_en;
+            document.getElementById('modalCropSeason').textContent = language === 'hi' ? crop.season_hi : crop.season_en;
+            document.getElementById('modalCropPesticides').textContent = language === 'hi' ? crop.pesticides_hi : crop.pesticides_en;
+            document.getElementById('modalCropWater').textContent = language === 'hi' ? crop.water_hi : crop.water_en;
+            document.getElementById('modalCropAdditional').textContent = language === 'hi' ? crop.additional_hi : crop.additional_en;
+            
+            document.getElementById('cropModal').style.display = 'block';
+        }
+
+        // Function to close crop detail modal
+        function closeCropModal() {
+            document.getElementById('cropModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('cropModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        const govSchemes = [
+            { 
+                name_en: 'PM Kisan Yojana', 
+                name_hi: 'पीएम किसान योजना', 
+                link: 'https://pmkisan.gov.in', 
+                image: 'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                desc_en: 'Financial support of ₹6000 per year to small and marginal farmers',
+                desc_hi: 'छोटे और सीमांत किसानों को प्रति वर्ष ₹6000 की वित्तीय सहायता'
+            },
+            { 
+                name_en: 'Soil Health Card', 
+                name_hi: 'मृदा स्वास्थ्य कार्ड', 
+                link: 'https://soilhealth.dac.gov.in/', 
+                image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                desc_en: 'Helps farmers monitor soil health and improve productivity',
+                desc_hi: 'किसानों को मिट्टी के स्वास्थ्य की निगरानी और उत्पादकता बढ़ाने में मदद करता है'
+            },
+            { 
+                name_en: 'Pradhan Mantri Fasal Bima Yojana', 
+                name_hi: 'प्रधानमंत्री फसल बीमा योजना', 
+                link: 'https://pmfby.gov.in/', 
+                image: 'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
+                desc_en: 'Crop insurance scheme to protect farmers from natural calamities',
+                desc_hi: 'किसानों को प्राकृतिक आपदाओं से बचाने के लिए फसल बीमा योजना'
+            },
+            { 
+                name_en: 'National Mission for Sustainable Agriculture', 
+                name_hi: 'राष्ट्रीय सतत कृषि मिशन', 
+                link: 'https://nmsa.dac.gov.in/', 
+                image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
+                desc_en: 'Promotes sustainable agriculture through water use efficiency and soil health management',
+                desc_hi: 'जल उपयोग दक्षता और मृदा स्वास्थ्य प्रबंधन के माध्यम से सतत कृषि को बढ़ावा देता है'
+            }
+        ];
+
+        function displaySchemes() {
+            const grid = document.getElementById('gov-schemes-grid');
+            grid.innerHTML = '';
+            govSchemes.forEach(s => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <img src="${s.image}" alt="${language === 'hi' ? s.name_hi : s.name_en}">
+                    <div class="card-content">
+                        <h3>${language === 'hi' ? s.name_hi : s.name_en}</h3>
+                        <p>${language === 'hi' ? s.desc_hi : s.desc_en}</p>
+                        <button class="btn-primary" onclick="window.open('${s.link}', '_blank')">${language === 'hi' ? 'देखें' : 'View'}</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        displaySchemes();
+
+        const WEATHER_API_KEY = "f5ab1e5305ecba28280621510cb89549";
+
+        // Populate states dropdown
+        function populateStates() {
+            const stateSelect = document.getElementById('stateSelect');
+            stateSelect.innerHTML = '<option value="">' + (language === 'hi' ? 'राज्य चुनें' : 'Select State') + '</option>';
+            
+            Object.keys(indianLocations).forEach(state => {
+                const option = document.createElement('option');
+                option.value = state;
+                option.textContent = state;
+                stateSelect.appendChild(option);
+            });
+        }
+
+        // Update districts based on selected state
+        function updateDistricts() {
+            const stateSelect = document.getElementById('stateSelect');
+            const districtSelect = document.getElementById('districtSelect');
+            const citySelect = document.getElementById('citySelect');
+            
+            districtSelect.innerHTML = '<option value="">' + (language === 'hi' ? 'जिला चुनें' : 'Select District') + '</option>';
+            citySelect.innerHTML = '<option value="">' + (language === 'hi' ? 'शहर चुनें' : 'Select City') + '</option>';
+            
+            if (stateSelect.value) {
+                const districts = indianLocations[stateSelect.value];
+                Object.keys(districts).forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district;
+                    option.textContent = district;
+                    districtSelect.appendChild(option);
+                });
+            }
+        }
+
+        // Update cities based on selected district
+        function updateCities() {
+            const stateSelect = document.getElementById('stateSelect');
+            const districtSelect = document.getElementById('districtSelect');
+            const citySelect = document.getElementById('citySelect');
+            
+            citySelect.innerHTML = '<option value="">' + (language === 'hi' ? 'शहर चुनें' : 'Select City') + '</option>';
+            
+            if (stateSelect.value && districtSelect.value) {
+                const cities = indianLocations[stateSelect.value][districtSelect.value];
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+            }
+        }
+
+        async function getWeather() {
+            const citySelect = document.getElementById('citySelect');
+            const city = citySelect.value;
+            
+            if (!city) {
+                alert(language === 'hi' ? 'कृपया एक शहर चुनें' : 'Please select a city');
+                return;
+            }
+            
+            try {
+                // Show loading message
+                document.getElementById('weatherResult').innerHTML = language === 'hi' ? 'मौसम डेटा लोड हो रहा है...' : 'Loading weather data...';
+                
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city},IN&appid=${WEATHER_API_KEY}&units=metric`);
+                
+                if (!res.ok) {
+                    throw new Error('City not found');
+                }
+                
+                const data = await res.json();
+                const temp = data.main.temp;
+                const humidity = data.main.humidity;
+                const windSpeed = data.wind.speed;
+                const desc = data.weather[0].description;
+
+                document.getElementById('weatherResult').innerHTML = `${desc}`;
+                document.getElementById('temperature').innerHTML = `${temp}°C`;
+                document.getElementById('humidity').innerHTML = `${humidity}%`;
+                document.getElementById('windSpeed').innerHTML = `${windSpeed} km/h`;
+
+                // Update weather graphics based on condition
+                updateWeatherGraphics(desc);
+
+                drawWeatherGraph(temp, humidity, windSpeed);
+                create3DWeatherGraph(temp, humidity, windSpeed, desc);
+            } catch (err) {
+                console.error('Weather API error:', err);
+                document.getElementById('weatherResult').innerHTML = language === 'hi' ? 'शहर नहीं मिला' : 'City not found';
+                document.getElementById('temperature').innerHTML = '--°C';
+                document.getElementById('humidity').innerHTML = '--%';
+                document.getElementById('windSpeed').innerHTML = '-- km/h';
+            }
+        }
+
+        function updateWeatherGraphics(desc) {
+            const graphicsContainer = document.getElementById('weatherGraphics');
+            graphicsContainer.innerHTML = '';
+
+            if (desc.includes("rain")) {
+                // Add rain graphics
+                graphicsContainer.style.background = 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5))';
+                for (let i = 0; i < 5; i++) {
+                    const rain = document.createElement('div');
+                    rain.className = 'rain';
+                    graphicsContainer.appendChild(rain);
+                }
+                // Add clouds
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                graphicsContainer.appendChild(cloud);
+            } else if (desc.includes("cloud")) {
+                // Add cloud graphics
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                graphicsContainer.appendChild(cloud);
+            } else {
+                // Add sun graphics
+                const sun = document.createElement('div');
+                sun.className = 'sun';
+                graphicsContainer.appendChild(sun);
+            }
+        }
+
+        function drawWeatherGraph(currentTemp, humidity, windSpeed) {
+            const ctx = document.getElementById('weatherChart').getContext('2d');
+            const temps = [currentTemp, currentTemp + 1, currentTemp - 1, currentTemp + 2, currentTemp, currentTemp - 1];
+            const humidities = [humidity, humidity - 5, humidity + 3, humidity - 2, humidity + 5, humidity - 3];
+            const windSpeeds = [windSpeed, windSpeed + 1, windSpeed - 0.5, windSpeed + 1.5, windSpeed, windSpeed - 1];
+            
+            const tempLabel = language === 'hi' ? 'तापमान °C' : 'Temperature °C';
+            const humidityLabel = language === 'hi' ? 'आर्द्रता %' : 'Humidity %';
+            const windLabel = language === 'hi' ? 'हवा की गति किमी/घंटा' : 'Wind Speed km/h';
+            
+            // Destroy existing chart if it exists
+            if (window.weatherChartInstance) {
+                window.weatherChartInstance.destroy();
+            }
+            
+            window.weatherChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: language === 'hi' ? ['सोम', 'मंगल', 'बुध', 'गुरु', 'शुक्र', 'शनि'] : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    datasets: [
+                        { label: tempLabel, data: temps, borderColor: '#2E7D32', backgroundColor: 'rgba(46, 125, 50, 0.1)', borderWidth: 3, tension: 0.4 },
+                        { label: humidityLabel, data: humidities, borderColor: '#2196F3', backgroundColor: 'rgba(33, 150, 243, 0.1)', borderWidth: 3, tension: 0.4 },
+                        { label: windLabel, data: windSpeeds, borderColor: '#FF9800', backgroundColor: 'rgba(255, 152, 0, 0.1)', borderWidth: 3, tension: 0.4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#333', font: { size: 14 } } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#333' }, grid: { color: 'rgba(0,0,0,0.1)' } },
+                        y: { ticks: { color: '#333' }, grid: { color: 'rgba(0,0,0,0.1)' } }
+                    }
+                }
+            });
+        }
+
+        // 3D Weather Graph using Three.js
+        function create3DWeatherGraph(temp, humidity, windSpeed, desc) {
+            const container = document.getElementById('weather3d');
+            container.innerHTML = '';
+            
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            // Add lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 20, 5);
+            scene.add(directionalLight);
+            
+            // Create weather elements based on conditions
+            if (desc.includes("rain")) {
+                // Create rain effect
+                for (let i = 0; i < 100; i++) {
+                    const raindropGeometry = new THREE.CylinderGeometry(0.02, 0.02, 0.2, 8);
+                    const raindropMaterial = new THREE.MeshPhongMaterial({ color: 0x87CEEB });
+                    const raindrop = new THREE.Mesh(raindropGeometry, raindropMaterial);
+                    
+                    raindrop.position.x = Math.random() * 20 - 10;
+                    raindrop.position.y = Math.random() * 10;
+                    raindrop.position.z = Math.random() * 20 - 10;
+                    
+                    scene.add(raindrop);
+                }
+                
+                // Create clouds
+                const cloudGeometry = new THREE.SphereGeometry(1, 8, 8);
+                const cloudMaterial = new THREE.MeshPhongMaterial({ color: 0xf0f0f0 });
+                
+                for (let i = 0; i < 5; i++) {
+                    const cloud = new THREE.Mesh(cloudGeometry, cloudMaterial);
+                    cloud.position.x = Math.random() * 15 - 7.5;
+                    cloud.position.y = 3;
+                    cloud.position.z = Math.random() * 15 - 7.5;
+                    cloud.scale.set(Math.random() * 1.5 + 0.5, Math.random() * 0.5 + 0.5, Math.random() * 1.5 + 0.5);
+                    scene.add(cloud);
+                }
+            } else if (desc.includes("cloud")) {
+                // Create clouds
+                const cloudGeometry = new THREE.SphereGeometry(1, 8, 8);
+                const cloudMaterial = new THREE.MeshPhongMaterial({ color: 0xf0f0f0 });
+                
+                for (let i = 0; i < 5; i++) {
+                    const cloud = new THREE.Mesh(cloudGeometry, cloudMaterial);
+                    cloud.position.x = Math.random() * 15 - 7.5;
+                    cloud.position.y = 3;
+                    cloud.position.z = Math.random() * 15 - 7.5;
+                    cloud.scale.set(Math.random() * 1.5 + 0.5, Math.random() * 0.5 + 0.5, Math.random() * 1.5 + 0.5);
+                    scene.add(cloud);
+                }
+            } else {
+                // Create sun
+                const sunGeometry = new THREE.SphereGeometry(1.5, 32, 32);
+                const sunMaterial = new THREE.MeshPhongMaterial({ color: 0xFFD700, emissive: 0xFFA500 });
+                const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+                sun.position.set(0, 3, 0);
+                scene.add(sun);
+            }
+            
+            // Create temperature, humidity, and wind speed indicators
+            const tempBar = createBar(temp / 50, 0xE74C3C, -4, 0);
+            const humidityBar = createBar(humidity / 100, 0x3498DB, 0, 0);
+            const windBar = createBar(windSpeed / 20, 0x2ECC71, 4, 0);
+            
+            scene.add(tempBar);
+            scene.add(humidityBar);
+            scene.add(windBar);
+            
+            // Add labels
+            const tempLabel = language === 'hi' ? `तापमान: ${temp}°C` : `Temp: ${temp}°C`;
+            const humidityLabel = language === 'hi' ? `आर्द्रता: ${humidity}%` : `Humidity: ${humidity}%`;
+            const windLabel = language === 'hi' ? `हवा: ${windSpeed} किमी/घंटा` : `Wind: ${windSpeed} km/h`;
+            
+            const tempSprite = createTextSprite(tempLabel, 0xE74C3C, -4, -1.5);
+            const humiditySprite = createTextSprite(humidityLabel, 0x3498DB, 0, -1.5);
+            const windSprite = createTextSprite(windLabel, 0x2ECC71, 4, -1.5);
+            
+            scene.add(tempSprite);
+            scene.add(humiditySprite);
+            scene.add(windSprite);
+            
+            camera.position.z = 15;
+            camera.position.y = 5;
+            
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.25;
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+        
+        function createBar(value, color, x, z) {
+            const geometry = new THREE.BoxGeometry(0.5, value * 5, 0.5);
+            const material = new THREE.MeshPhongMaterial({ color: color });
+            const bar = new THREE.Mesh(geometry, material);
+            bar.position.set(x, value * 2.5, z);
+            return bar;
+        }
+        
+        function createTextSprite(text, color, x, y) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 256;
+            canvas.height = 128;
+            
+            context.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            
+            context.font = '24px Arial';
+            context.fillStyle = `rgb(${color >> 16}, ${(color >> 8) & 0xFF}, ${color & 0xFF})`;
+            context.textAlign = 'center';
+            context.fillText(text, canvas.width / 2, canvas.height / 2);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(material);
+            sprite.position.set(x, y, 0);
+            sprite.scale.set(4, 2, 1);
+            
+            return sprite;
+        }
+
+        const cropsList = ["wheat", "rice", "sugarcane", "til", "mustard", "potato", "tomato", "bajra", "corn", "peanuts", "cotton", "soybean"];
+
+        async function fetchMandi() {
+            const tbody = document.getElementById('mandi-table-body');
+            tbody.innerHTML = "";
+            const prices = [];
+            const profits = [];
+            const labels = [];
+            for (let cropKey of cropsList) {
+                try {
+                    // Mock data since we don't have the actual API
+                    const marketPrice = Math.floor(Math.random() * 5000) + 1000;
+                    const wholesaler = Math.floor(Math.random() * 4000) + 800;
+                    const profit = marketPrice - wholesaler;
+                    const cropName = cropNames[cropKey][language];
+                    labels.push(cropName);
+                    prices.push(marketPrice);
+                    profits.push(profit);
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>
+                                        <div style="display: flex; align-items: center; gap: 10px; justify-content: center;">
+                                            <div class="crop-icon">
+                                                <i class="fas fa-seedling"></i>
+                                            </div>
+                                            ${cropName}
+                                        </div>
+                                    </td>
+                                    <td>₹${marketPrice}</td>
+                                    <td>₹${wholesaler}</td>
+                                    <td>₹${profit.toFixed(2)}</td>`;
+                    tbody.appendChild(row);
+                } catch (e) { console.error(e); }
+            }
+
+            const ctx = document.getElementById('mandiChart').getContext('2d');
+            const marketPriceLabel = language === 'hi' ? 'बाजार मूल्य' : 'Market Price';
+            const profitLabel = language === 'hi' ? 'लाभ' : 'Profit';
+            
+            // Destroy existing chart if it exists
+            if (window.mandiChartInstance) {
+                window.mandiChartInstance.destroy();
+            }
+            
+            window.mandiChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: marketPriceLabel, data: prices, backgroundColor: 'rgba(46, 125, 50, 0.7)' },
+                        { label: profitLabel, data: profits, backgroundColor: 'rgba(255, 215, 0, 0.7)' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+        fetchMandi();
+
+        function sendMessage() {
+            const input = document.getElementById('aiInput').value;
+            if (!input) return;
+            const chat = document.getElementById('aiMessages');
+            
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user-message';
+            userMsg.innerText = input;
+            chat.appendChild(userMsg);
+
+            const botMsg = document.createElement('div');
+            botMsg.className = 'message bot-message';
+            const response = getAIResponse(input);
+            botMsg.innerText = response;
+            lastBotMessage = response;
+            chat.appendChild(botMsg);
+            
+            document.getElementById('aiInput').value = '';
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        const crops = [
+            { name: 'Wheat', name_hi: 'गेहूँ', soil: 'Loamy', pesticides: 'Pesticide A,B', bestSeason: 'Winter', key: 'wheat' },
+            { name: 'Rice', name_hi: 'चावल', soil: 'Clayey', pesticides: 'Pesticide X,Y', bestSeason: 'Monsoon', key: 'rice' },
+            { name: 'Sugarcane', name_hi: 'गन्ना', soil: 'Loamy', pesticides: 'Pesticide S', bestSeason: 'Winter', key: 'sugarcane' },
+            { name: 'Til', name_hi: 'तिल', soil: 'Sandy', pesticides: 'Pesticide T', bestSeason: 'Summer', key: 'til' },
+            { name: 'Mustard', name_hi: 'सरसों', soil: 'Loamy', pesticides: 'Pesticide M', bestSeason: 'Winter', key: 'mustard' },
+            { name: 'Potato', name_hi: 'आलू', soil: 'Sandy loam', pesticides: 'Pesticide P', bestSeason: 'Winter', key: 'potato' },
+            { name: 'Tomato', name_hi: 'टमाटर', soil: 'Loamy', pesticides: 'Pesticide TT', bestSeason: 'Summer', key: 'tomato' },
+            { name: 'Bajra', name_hi: 'बाजरा', soil: 'Sandy', pesticides: 'Pesticide B', bestSeason: 'Monsoon', key: 'bajra' },
+            { name: 'Corn', name_hi: 'मक्का', soil: 'Loamy', pesticides: 'Pesticide C', bestSeason: 'Summer', key: 'corn' },
+            { name: 'Peanuts', name_hi: 'मूंगफली', soil: 'Sandy loam', pesticides: 'Pesticide PN', bestSeason: 'Summer', key: 'peanuts' },
+            { name: 'Cotton', name_hi: 'कपास', soil: 'Black Cotton', pesticides: 'Pesticide CT', bestSeason: 'Kharif', key: 'cotton' },
+            { name: 'Soybean', name_hi: 'सोयाबीन', soil: 'Loamy', pesticides: 'Pesticide SB', bestSeason: 'Kharif', key: 'soybean' }
+        ];
+
+        function displayCrops() {
+            const grid = document.getElementById('crops-grid');
+            grid.innerHTML = '';
+            crops.forEach(c => {
+                const card = document.createElement('div');
+                card.className = 'crop-card';
+                card.innerHTML = `
+                    <div class="crop-icon-large">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>${language === 'hi' ? c.name_hi : c.name}</h3>
+                        <p><strong>${language === 'hi' ? 'मिट्टी:' : 'Soil:'}</strong> ${c.soil}</p>
+                        <p><strong>${language === 'hi' ? 'सर्वोत्तम कीटनाशक:' : 'Best Pesticides:'}</strong> ${c.pesticides}</p>
+                        <p><strong>${language === 'hi' ? 'सर्वोत्तम मौसम:' : 'Best Season:'}</strong> ${c.bestSeason}</p>
+                        <button class="btn-primary" onclick="openCropModal('${c.key}')">
+                            ${language === 'hi' ? 'अधिक जानकारी' : 'More Info'}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        displayCrops();
+
+        // Initialize with some weather graphics
+        updateWeatherGraphics("clear");
+        create3DWeatherGraph(25, 65, 12, "clear");
+        
+        // Set Hindi as default language on page load
+        window.onload = function() {
+            setLanguage('hi');
+            populateStates();
+            
+            // Add scroll event listener to hide header on scroll down
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('mainHeader');
+                const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                if (currentScrollTop > lastScrollTop && currentScrollTop > 100) {
+                    // Scrolling down & past 100px
+                    header.classList.add('hidden');
+                } else {
+                    // Scrolling up
+                    header.classList.remove('hidden');
+                }
+                
+                lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+            }, false);
+        };
+    </script>
+            <style>
+  #weather3d {
+      width: 100%;
+      height: 1000px;
+      margin: 0;
+      padding: 0;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.8);
+  }
+
+   #weather {
+      margin-bottom: 0;
+      padding-bottom: 0;
+  }
+
+  footer {
+      margin-top: 0;
+  }
+</style>
+
+   }
+</style>
+</body>
+</html>
